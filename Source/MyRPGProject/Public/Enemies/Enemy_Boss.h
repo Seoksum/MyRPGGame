@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Enemies/Enemy.h"
+#include "Interface/EnemyAIInterface.h"
 #include "Enemy_Boss.generated.h"
 
 /**
@@ -13,7 +14,7 @@
 
 
 UCLASS()
-class MYRPGPROJECT_API AEnemy_Boss : public AEnemy
+class MYRPGPROJECT_API AEnemy_Boss : public AEnemy, public IEnemyAIInterface
 {
 	GENERATED_BODY()
 	
@@ -24,6 +25,8 @@ public:
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	virtual bool IsBossEnemyDead() override;
 
 protected:
 	virtual void BeginPlay() override;

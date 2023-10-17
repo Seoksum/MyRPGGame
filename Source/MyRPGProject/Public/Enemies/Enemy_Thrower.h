@@ -7,19 +7,19 @@
 #include "Enemy_Thrower.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class MYRPGPROJECT_API AEnemy_Thrower : public AEnemy
 {
 	GENERATED_BODY()
-	
+
 public:
 	AEnemy_Thrower();
 
 
 	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,9 +32,9 @@ public:
 	void ThrowProjectile();
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class AEnemyProjectile> ProjectileClass;
+		TSubclassOf<class AEnemyProjectile> ProjectileClass;
 
 	UPROPERTY()
-	class AEnemyProjectile* Projectile;
+		class AEnemyProjectile* Projectile;
 
 };

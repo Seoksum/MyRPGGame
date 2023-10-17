@@ -93,7 +93,7 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = "Stat")
 		float MaxMana;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
+	UPROPERTY(Transient, EditAnywhere, Category = "Stat")
 		float CurrentHp;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")

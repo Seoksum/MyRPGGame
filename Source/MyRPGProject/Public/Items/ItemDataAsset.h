@@ -15,7 +15,7 @@ enum class EItemType : uint8
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class MYRPGPROJECT_API UItemDataAsset : public UPrimaryDataAsset
@@ -26,7 +26,7 @@ public:
 	UStaticMesh* GetLazyLoadedMesh();
 	virtual void Use(class ACharacter_Parent* PlayerCharacter);
 
-	
+
 public:
 
 	FPrimaryAssetId GetPrimaryAssetId() const override
@@ -34,14 +34,14 @@ public:
 		return FPrimaryAssetId("ItemDataAsset", GetFName());
 	}
 
-	UPROPERTY()
-	TWeakObjectPtr<class UInventoryComponent> OwingInventory;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
 	EItemType Type;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> Mesh;
+
+	UPROPERTY()
+	TWeakObjectPtr<class UInventoryComponent> OwingInventory;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
 	class UTexture2D* Thumbnail;

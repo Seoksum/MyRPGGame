@@ -10,13 +10,13 @@ UCLASS()
 class MYRPGPROJECT_API AItemBox : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AItemBox();
 
 	UFUNCTION()
-	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
 protected:
@@ -27,25 +27,25 @@ protected:
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Component")
-	class UBoxComponent* CollisionComp;
+		class UBoxComponent* CollisionComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "Component")
-	class UStaticMeshComponent* MeshComp;
+		class UStaticMeshComponent* MeshComp;
 
 
 
 public:
 
 	UPROPERTY(EditAnywhere, Category = "Item")
-	class UItemDataAsset* Item;
+		class UItemDataAsset* Item;
 
 	void OnPickedUp();
 
 	UPROPERTY(EditAnywhere, Category = "Item")
-	int32 WeaponCount;
+		int32 WeaponCount;
 
 	UPROPERTY(EditAnywhere, Category = "Item")
-	int32 RandomIndex;
+		int32 BoxIndex;
 
 
 

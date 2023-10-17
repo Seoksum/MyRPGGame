@@ -26,7 +26,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 
-public:	
+public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -36,42 +36,43 @@ public:
 
 	virtual void Attack();
 
-	
+
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
-	class UEnemy_AnimInstance* AnimInstance;
+		class UEnemy_AnimInstance* AnimInstance;
 
-	UPROPERTY(VisibleAnywhere,Category="UI")
-	class UWidgetComponent* HpBar;
-
-	UPROPERTY(EditAnywhere, Category = "Stat")
-	int32 Level;
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+		class UWidgetComponent* HpBar;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
-	float EnemyExp;
+		int32 Level;
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float EnemyExp;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Item")
-	TSubclassOf<class AItemBox> ItemBoxClass;
+		TSubclassOf<class AItemBox> ItemBoxClass;
 
 	UPROPERTY(VisibleAnywhere, Category = "Item")
-	class AItemBox* ItemBox;
+		class AItemBox* ItemBox;
 
 	FTimerHandle DeathTimerHandle;
 
 public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
-	class UMyStatComponent* Stat;
+		class UMyStatComponent* Stat;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
-	bool IsDeath = false;
+		bool IsDeath = false;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
-	bool IsAttacking = false;
+		bool IsAttacking = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class USoundBase* DeathSound;
+		class USoundBase* DeathSound;
 
 	FOnEnemyDeath OnEnemyDeath;
 
@@ -80,13 +81,13 @@ public:
 	FOnBossJump OnBossJump;
 
 	UPROPERTY(EditAnywhere, Category = "Enemy")
-	int32 EnemyIndex;
+		int32 EnemyIndex;
 
 	UPROPERTY(EditAnywhere, Category = "Enemy")
-	int32 ItemBoxIndex;
+		int32 ItemBoxIndex;
 
 	UPROPERTY(EditAnywhere, Category = "Mesh")
-	class USkeletalMeshComponent* Weapon;
+		class USkeletalMeshComponent* Weapon;
 
 
 };

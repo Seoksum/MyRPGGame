@@ -7,7 +7,7 @@
 #include "Enemy_Corpse.generated.h"
 
 /**
- * 
+ *
  */
 
 
@@ -21,7 +21,7 @@ public:
 	AEnemy_Corpse();
 
 	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 protected:
 	virtual void BeginPlay() override;
@@ -34,5 +34,5 @@ public:
 	void AttackCheck();
 
 
-	
+
 };
