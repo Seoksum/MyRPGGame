@@ -61,9 +61,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		int32 TotalAttackIndex;
 
-	UPROPERTY(VisibleAnywhere)
-	int32 TotalAttackIndex;
-
 	UPROPERTY()
 		int32 AttackIndex = 0;
 

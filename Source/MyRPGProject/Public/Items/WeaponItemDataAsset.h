@@ -40,21 +40,15 @@ public:
 	FCharacterStat WeaponStat;
 
 	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
-		TSoftObjectPtr<USkeletalMesh> WeaponMesh;
-
-	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
-		TSoftObjectPtr<USkeletalMeshComponent> WeaponMeshComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
-		EWeaponType WeaponType;
-
-	FCharacterStat WeaponStat;
-
-	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
 
 	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
 	TSoftObjectPtr<USkeletalMeshComponent> WeaponMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
+	EWeaponType WeaponType;
+
+	FCharacterStat WeaponStat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
 	EWeaponType WeaponType;

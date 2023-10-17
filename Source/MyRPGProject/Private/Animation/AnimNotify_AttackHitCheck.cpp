@@ -14,7 +14,6 @@ void UAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 		if (Player)
 		{
 			Player->AttackHitCheck();
-			UE_LOG(LogTemp, Log, TEXT("Player Attack Hit"));
 		}
 	}
 }
