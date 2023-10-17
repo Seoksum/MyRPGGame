@@ -33,12 +33,6 @@ AMyPlayerController::AMyPlayerController()
 		RestartHUDClass = Restart_Class.Class;
 	}
 
-	static ConstructorHelpers::FClassFinder<UUserWidget> Crosshair_Class(TEXT("WidgetBlueprint'/Game/UI/WBP_Crosshair.WBP_Crosshair_C'"));
-	if (Crosshair_Class.Succeeded())
-	{
-		CrosshairHUDClass = Crosshair_Class.Class;
-	}
-
 	static ConstructorHelpers::FClassFinder<UUserWidget> Winner_Class(TEXT("WidgetBlueprint'/Game/UI/WBP_Win.WBP_Win_C'"));
 	if (Winner_Class.Succeeded())
 	{
@@ -175,16 +169,3 @@ bool AMyPlayerController::ApplyHUD(UUserWidget* WidgetToApply, bool IsShowMouseC
 	return false;
 }
 
-
-void AMyPlayerController::AddCrossWidget()
-{
-	CrosshairWidget = CreateWidget(GetWorld(), CrosshairHUDClass);
-	if (CrosshairWidget)
-		CrosshairWidget->AddToViewport();
-}
-
-void AMyPlayerController::RemoveCrossWidget()
-{
-	if (CrosshairWidget)
-		CrosshairWidget->RemoveFromViewport();
-}

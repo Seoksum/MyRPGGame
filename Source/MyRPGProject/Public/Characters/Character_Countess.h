@@ -69,7 +69,6 @@ public:
 	class USkeletalMeshComponent* LeftSword;
 
 
-	class USkeletalMeshComponent* LeftSword;
 
 
 };

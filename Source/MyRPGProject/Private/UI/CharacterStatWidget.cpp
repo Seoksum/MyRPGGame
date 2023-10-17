@@ -6,10 +6,3 @@
 #include "Components/MyStatComponent.h"
 
 
-void UCharacterStatWidget::NativeOnInitialized()
-{
-	Super::NativeOnInitialized();
-	
-}
-
-

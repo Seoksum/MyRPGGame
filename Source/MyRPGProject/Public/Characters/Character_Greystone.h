@@ -45,11 +45,6 @@ protected:
 	void ReleaseClimbing();
 	FTimerHandle ClimbingTimerHandle;
 
-	void ReleaseClimbing();
-
-	FTimerHandle ClimbingTimerHandle;
-
-
 	virtual void CameraShakeCheck() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))

@@ -48,7 +48,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
 	EWeaponType WeaponType;
 
-	FCharacterStat WeaponStat;
 
 protected:
 
