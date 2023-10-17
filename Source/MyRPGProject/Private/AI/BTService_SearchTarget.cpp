@@ -23,7 +23,7 @@ void UBTService_SearchTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	UWorld* World = CurrentPawn->GetWorld();
 	FVector Center = CurrentPawn->GetActorLocation();
-	float SearchRadius = 500.f;
+	float SearchRadius = 600.f;
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams QueryParams(NAME_None, false, CurrentPawn);

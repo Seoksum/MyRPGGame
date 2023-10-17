@@ -12,6 +12,7 @@
 #include "Characters/Character_Parent.h"
 #include "Enemies/Enemy.h"
 #include "TimerManager.h"
+#include "GameData/GameCollision.h"
 
 
 // Sets default values
@@ -34,7 +35,7 @@ void UWeaponItemDataAsset_Gun::Fire()
 		FVector EyeLocation;
 		FRotator EyeRotation;
 		Player->GetActorEyesViewPoint(EyeLocation, EyeRotation); // OUT parameter
-		
+
 		FVector TraceStart = WeaponMeshComponent->GetSocketLocation(MuzzleSocketName);
 		FVector ShotDirection = EyeRotation.Vector();
 		FVector TraceEnd = TraceStart + (ShotDirection * 3000); // 종료 지점
@@ -43,7 +44,9 @@ void UWeaponItemDataAsset_Gun::Fire()
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(Player);
 
-		bool bHit = Player->GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_GameTraceChannel3, QueryParams);
+		bool bHit = Player->GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ATTACK, QueryParams);
+
+		
 		if (bHit)
 		{
 			AEnemy* Enemy = Cast<AEnemy>(Hit.GetActor());
@@ -57,12 +60,16 @@ void UWeaponItemDataAsset_Gun::Fire()
 			{
 				PlayImpactEffects(Hit.ImpactPoint, DefaultImpactEffect);
 			}
-
 			TraceEndPoint = Hit.ImpactPoint;
 		}
 
 		PlayFireEffects(TraceEndPoint);
 		LastFiredTime = Player->GetWorld()->TimeSeconds;
+
+		if (FireSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(Player->GetWorld(), FireSound, Player->GetActorLocation());
+		}
 	}
 }
 
@@ -72,15 +79,14 @@ void UWeaponItemDataAsset_Gun::WeaponAttack(ACharacter_Parent* InPlayer)
 
 	Player = InPlayer;
 	StartFire();
-	
 }
 
 void UWeaponItemDataAsset_Gun::StartFire()
 {
 	if (WeaponMeshComponent != nullptr)
 	{
-		float FirstDelay = FMath::Max(LastFiredTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.f);
-		Player->GetWorld()->GetTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &UWeaponItemDataAsset_Gun::Fire, TimeBetweenShots, true, 0.f);
+		float FirstDelay = FMath::Max(LastFiredTime + TimeBetweenShots - Player->GetWorld()->TimeSeconds, 0.f);
+		Player->GetWorld()->GetTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &UWeaponItemDataAsset_Gun::Fire, TimeBetweenShots, true, FirstDelay);
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, Player->GetActorLocation());
 	}
 }

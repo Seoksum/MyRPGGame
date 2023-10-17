@@ -5,7 +5,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Enemies/Enemy.h"
 
 
 // Sets default values
@@ -36,44 +35,37 @@ AArrow::AArrow()
 	ProjectileMovementComp->MaxSpeed = 5000.f;
 	ProjectileMovementComp->bRotationFollowsVelocity = false;
 	ProjectileMovementComp->bInitialVelocityInLocalSpace = true;
-	
+
 	SetActorLocation(FVector(0.f, 0.f, 30.f));
 
 	MuzzleSocketName = "MuzzleSocket";
 	InitialLifeSpan = 3.f;
 	BaseDamage = 30.f;
-
-	SetReplicates(true);
-	SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
 void AArrow::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (DefaultEffect)
 	{
 		UGameplayStatics::SpawnEmitterAttached(DefaultEffect, MeshComp, MuzzleSocketName);
 	}
 }
 
-void AArrow::OnBeginOverlap(UPrimitiveComponent* OverlappedcComp, AActor* OtherActor, 
+void AArrow::OnBeginOverlap(UPrimitiveComponent* OverlappedcComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AEnemy* Enemy = Cast<AEnemy>(OtherActor);
 	FDamageEvent DamageEvent;
-	FTransform EffectTrasform(FRotator::ZeroRotator, OtherActor->GetActorLocation());
 
-	if (Enemy)
+	OtherActor->TakeDamage(BaseDamage, DamageEvent, OtherActor->GetInstigatorController(), this);
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (SkillEffect)
 	{
-		Enemy->TakeDamage(BaseDamage, DamageEvent, Enemy->GetController(), this);
-		CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (SkillEffect)
-		{
-			UGameplayStatics::SpawnEmitterAttached(SkillEffect, MeshComp);
-		}
+		UGameplayStatics::SpawnEmitterAttached(SkillEffect, MeshComp);
 	}
 }
 

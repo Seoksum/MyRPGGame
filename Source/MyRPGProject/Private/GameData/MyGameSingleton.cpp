@@ -9,20 +9,17 @@ DEFINE_LOG_CATEGORY(LogMyGameSingleton);
 UMyGameSingleton::UMyGameSingleton()
 {
 	// 데이터 테이블 받아오기 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableRef(TEXT("DataTable'/Game/Data/MyStatTable.MyStatTable'"));
-	if (nullptr != DataTableRef.Object)
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("DataTable'/Game/Data/CharacterStatTable.CharacterStatTable'"));
+	if (DataTable.Object)
 	{
-		const UDataTable* DataTable = DataTableRef.Object;
-		check(DataTable->GetRowMap().Num() > 0);
+		const UDataTable* StatDataTable = DataTable.Object;
 
-		TArray<uint8*> ValueArray;
-		DataTable->GetRowMap().GenerateValueArray(ValueArray);
-		Algo::Transform(ValueArray, CharacterStatTable,
-			[](uint8* Value)
-			{
-				return *reinterpret_cast<FCharacterStat*>(Value);
-			}
-		);
+		TArray<FCharacterStat*> CharacterStats;
+		StatDataTable->GetAllRows<FCharacterStat>(TEXT("GetAllRows"), CharacterStats);
+		for (int32 i = 0; i < CharacterStats.Num(); ++i)
+		{
+			CharacterStatTable.Add(*CharacterStats[i]);
+		}
 	}
 
 	MaxLevel = CharacterStatTable.Num();
@@ -50,5 +47,3 @@ FCharacterStat UMyGameSingleton::GetCharacterStat(int32 Level)
 	}
 	return FCharacterStat();
 }
-//return CharacterStatTable.IsValidIndex(InLevel) ? CharacterStatTable[InLevel] : FCharacterStat();
-

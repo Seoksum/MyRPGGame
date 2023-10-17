@@ -9,37 +9,43 @@
 
 UAnimInstance_Countess::UAnimInstance_Countess()
 {
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM(TEXT("AnimMontage'/Game/MainCharacter/Countess/Montages/Attack_Default.Attack_Default'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> Montage_DefaultAttack(TEXT("AnimMontage'/Game/Blueprints/MainCharacter/Countess/Montages/Attack_Default.Attack_Default'"));
+	if (Montage_DefaultAttack.Succeeded())
+	{
+		AttackMontage_Default = Montage_DefaultAttack.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AM(TEXT("AnimMontage'/Game/Blueprints/MainCharacter/Countess/Montages/Attack_SwordDefault.Attack_SwordDefault'"));
 	if (AM.Succeeded())
 	{
 		AttackMontage_SwordDefault = AM.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AQ(TEXT("AnimMontage'/Game/MainCharacter/Countess/Montages/Attack_Q.Attack_Q'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AQ(TEXT("AnimMontage'/Game/Blueprints/MainCharacter/Countess/Montages/Attack_SwordQ.Attack_SwordQ'"));
 	if (AQ.Succeeded())
 	{
 		AttackMontage_Q = AQ.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AE(TEXT("AnimMontage'/Game/MainCharacter/Countess/Montages/Attack_E.Attack_E'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AE(TEXT("AnimMontage'/Game/Blueprints/MainCharacter/Countess/Montages/Attack_SwordE.Attack_SwordE'"));
 	if (AE.Succeeded())
 	{
 		AttackMontage_E = AE.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AR(TEXT("AnimMontage'/Game/MainCharacter/Countess/Montages/Attack_R.Attack_R'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AR(TEXT("AnimMontage'/Game/Blueprints/MainCharacter/Countess/Montages/Attack_SwordR.Attack_SwordR'"));
 	if (AR.Succeeded())
 	{
 		AttackMontage_R = AR.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> CC(TEXT("AnimMontage'/Game/MainCharacter/Greystone/Montages/ClimbingComplete.ClimbingComplete'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> CC(TEXT("AnimMontage'/Game/Blueprints/MainCharacter/Countess/Montages/ClimbingComplete.ClimbingComplete'"));
 	if (CC.Succeeded())
 	{
 		ClimbingCompleteMontage = CC.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> BA(TEXT("AnimMontage'/Game/MainCharacter/Countess/Montages/Bow_AttackDefault.Bow_AttackDefault'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> BA(TEXT("AnimMontage'/Game/Blueprints/MainCharacter/Countess/Montages/Bow_AttackDefault.Bow_AttackDefault'"));
 	if (BA.Succeeded())
 	{
 		BowAttackMontage = BA.Object;
@@ -84,6 +90,7 @@ void UAnimInstance_Countess::NativeUpdateAnimation(float DeltaSeconds)
 
 void UAnimInstance_Countess::PlayDefaultAttackMontage()
 {
+	Montage_Play(AttackMontage_Default, 1.f);
 }
 
 void UAnimInstance_Countess::PlayAttackMontage()
@@ -113,6 +120,8 @@ void UAnimInstance_Countess::PlayBowAttackMontage()
 
 void UAnimInstance_Countess::JumpToSection_Default(int32 SectionIndex)
 {
+	FName Name = GetAttackMontageName(SectionIndex);
+	Montage_JumpToSection(Name, AttackMontage_Default);
 }
 
 void UAnimInstance_Countess::JumpToSection(int32 SectionIndex)
@@ -133,23 +142,14 @@ void UAnimInstance_Countess::PlayClimbingComplete()
 
 void UAnimInstance_Countess::AnimNotify_AttackHit()
 {
-	//auto Player = Cast<ACharacter_Countess>(TryGetPawnOwner());
-	//if (Player)
-	//{
-	//	auto Stat = Player->GetMyStatComponent();
-	//	if (Stat)
-	//	{
-	//		TraceDistance = 150.f;
-	//		OnAttackHit.Broadcast(Stat->GetTotalStat().Attack, TraceDistance);
-	//	}
-	//}
+
 }
 
 void UAnimInstance_Countess::AnimNotify_AttackHit_Q()
 {
 	if (Stat)
 	{
-		TraceDistance = 200.f;
+		TraceDistance = Stat->GetTotalStat().AttackRange * 300.f;
 		OnAttackHit_Q.Broadcast(Stat->GetTotalStat().AttackQ, TraceDistance);
 	}
 }
@@ -158,7 +158,7 @@ void UAnimInstance_Countess::AnimNotify_AttackHit_E()
 {
 	if (Stat)
 	{
-		TraceDistance = 300.f;
+		TraceDistance = Stat->GetTotalStat().AttackRange * 500.f;
 		OnAttackHit_E.Broadcast(Stat->GetTotalStat().AttackE, TraceDistance);
 	}
 }
@@ -167,7 +167,7 @@ void UAnimInstance_Countess::AnimNotify_AttackHit_R()
 {
 	if (Stat)
 	{
-		TraceDistance = 400.f;
+		TraceDistance = Stat->GetTotalStat().AttackRange * 700.f;
 		OnAttackHit_R.Broadcast(Stat->GetTotalStat().AttackR, TraceDistance);
 	}
 }

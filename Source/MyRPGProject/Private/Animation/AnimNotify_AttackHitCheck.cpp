@@ -10,12 +10,11 @@ void UAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 
 	if (MeshComp)
 	{
-		IAnimationAttackInterface* Player = Cast<IAnimationAttackInterface>(MeshComp->GetOwner()); // Owner´Â Sword
+		IAnimationAttackInterface* Player = Cast<IAnimationAttackInterface>(MeshComp->GetOwner());
 		if (Player)
 		{
 			Player->AttackHitCheck();
 		}
 	}
-
 }
 

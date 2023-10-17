@@ -31,9 +31,9 @@ AMyGameModeBase::AMyGameModeBase()
 
 			if (CharTypeIndex == ECharacterIndex::Greystone)
 			{
-				static ConstructorHelpers::FClassFinder<ACharacter_Greystone> BP_Greystone1(TEXT("Blueprint'/Game/MainCharacter/Greystone/BP_Greystone.BP_Greystone_C'"));
-				static ConstructorHelpers::FClassFinder<ACharacter_Greystone> BP_Greystone2(TEXT("Blueprint'/Game/MainCharacter/Greystone/BP_Greystone2.BP_Greystone2_C'"));
-				static ConstructorHelpers::FClassFinder<ACharacter_Greystone> BP_Greystone3(TEXT("Blueprint'/Game/MainCharacter/Greystone/BP_Greystone3.BP_Greystone3_C'"));
+				static ConstructorHelpers::FClassFinder<ACharacter_Greystone> BP_Greystone1(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Greystone/BP_Greystone.BP_Greystone_C'"));
+				static ConstructorHelpers::FClassFinder<ACharacter_Greystone> BP_Greystone2(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Greystone/BP_Greystone2.BP_Greystone2_C'"));
+				static ConstructorHelpers::FClassFinder<ACharacter_Greystone> BP_Greystone3(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Greystone/BP_Greystone3.BP_Greystone3_C'"));
 
 				if (BP_Greystone1.Succeeded() && CharMeshIndex == 0)
 					DefaultPawnClass = BP_Greystone1.Class;
@@ -47,9 +47,9 @@ AMyGameModeBase::AMyGameModeBase()
 
 			else if (CharTypeIndex == ECharacterIndex::Countess)
 			{
-				static ConstructorHelpers::FClassFinder<ACharacter_Countess> BP_Countess1(TEXT("Blueprint'/Game/MainCharacter/Countess/BP_Countess.BP_Countess_C'"));
-				static ConstructorHelpers::FClassFinder<ACharacter_Countess> BP_Countess2(TEXT("Blueprint'/Game/MainCharacter/Countess/BP_Countess2.BP_Countess2_C'"));
-				static ConstructorHelpers::FClassFinder<ACharacter_Countess> BP_Countess3(TEXT("Blueprint'/Game/MainCharacter/Countess/BP_Countess3.BP_Countess3_C'"));
+				static ConstructorHelpers::FClassFinder<ACharacter_Countess> BP_Countess1(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Countess/BP_Countess.BP_Countess_C'"));
+				static ConstructorHelpers::FClassFinder<ACharacter_Countess> BP_Countess2(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Countess/BP_Countess2.BP_Countess2_C'"));
+				static ConstructorHelpers::FClassFinder<ACharacter_Countess> BP_Countess3(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Countess/BP_Countess3.BP_Countess3_C'"));
 
 				if (BP_Countess1.Succeeded() && CharMeshIndex == 0)
 					DefaultPawnClass = BP_Countess1.Class;
@@ -78,8 +78,8 @@ void AMyGameModeBase::PawnKilled(class APawn* PawnKilled)
 
 	for (AAIController_Enemy* Controller : TActorRange<AAIController_Enemy>(GetWorld()))
 	{
-		if (!Controller->IsDead())
-		{		
+		if (!Controller->IsBossAIDead())
+		{
 			return; // 현재 레벨에서 죽어있는 AI가 없다면 조기 return 
 		}
 	}

@@ -12,20 +12,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
 #include "UI/HPWidget.h"
-#include "Weapon_Gun.h"
-#include "Weapon_Sword.h"
 #include "Camera/CameraComponent.h"
 #include "Enemies/Enemy.h"
 #include "Items/WeaponItemDataAsset_Sword.h"
-#include "Physics/ABCollision.h"
+#include "GameData/GameCollision.h"
 #include "GameData/CharacterEnum.h"
 
 
 ACharacter_Greystone::ACharacter_Greystone()
 {
-	Mana = 5;
 
-	//MyGameInstanceRef = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 }
 
@@ -33,9 +29,10 @@ void ACharacter_Greystone::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction(TEXT("Attack_Q"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackQ_Implementation);
-	PlayerInputComponent->BindAction(TEXT("Attack_E"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackE_Implementation);
-	PlayerInputComponent->BindAction(TEXT("Attack_R"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackR_Implementation);
+	PlayerInputComponent->BindAction(TEXT("Attack_Q"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackQ);
+	PlayerInputComponent->BindAction(TEXT("Attack_E"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackE);
+	PlayerInputComponent->BindAction(TEXT("Attack_R"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackR);
+
 }
 
 void ACharacter_Greystone::Tick(float DeltaTime)
@@ -46,7 +43,13 @@ void ACharacter_Greystone::Tick(float DeltaTime)
 	if (bIsClimbingComplete)
 	{
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * 3.f);
-		SetActorLocation(GetActorLocation() + GetActorUpVector() * 7.f);
+		SetActorLocation(GetActorLocation() + GetActorUpVector() * 10.f);
+	}
+
+	if (bIsClimbingUp && bIsOnWall)
+	{
+		FVector Loc = GetActorLocation();
+		SetActorLocation(FVector(Loc.X, Loc.Y, Loc.Z + 1.1f));
 	}
 
 	if (AttackMoving)
@@ -62,7 +65,7 @@ void ACharacter_Greystone::BeginPlay()
 
 	GetMesh()->HideBoneByName(TEXT("sword_bottom"), EPhysBodyOp::PBO_None);
 
-
+	Mana = Stat->GetTotalStat().Mana;
 }
 
 void ACharacter_Greystone::PostInitializeComponents()
@@ -78,7 +81,7 @@ void ACharacter_Greystone::PostInitializeComponents()
 
 		AnimInstance->OnMontageEnded.AddDynamic(this, &ACharacter_Greystone::OnAttackMontageEnded);
 		AnimInstance->OnCameraShake.AddUObject(this, &ACharacter_Greystone::CameraShakeCheck);
-		
+
 	}
 }
 
@@ -110,14 +113,13 @@ void ACharacter_Greystone::Attack()
 		AnimInstance->PlayBowAttackMontage();
 		IsAttacking = true;
 	}
-
 }
 
-void ACharacter_Greystone::AttackQ_Implementation()
+void ACharacter_Greystone::AttackQ()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingQ || Stat->GetCurrentMana() < 0.f)
 		return;
-	
+
 	IsAttackingQ = true;
 	AnimInstance->PlayAttackMontageQ();
 	Stat->OnAttacking(Mana); //Mana 크기만큼 플레이어의 마나 소모
@@ -125,7 +127,7 @@ void ACharacter_Greystone::AttackQ_Implementation()
 	GetWorldTimerManager().SetTimer(QSkillHandle, this, &ACharacter_Greystone::EndAttack_Q, 1.f, true);
 }
 
-void ACharacter_Greystone::AttackE_Implementation()
+void ACharacter_Greystone::AttackE()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingE || Stat->GetCurrentMana() < 0.f)
 		return;
@@ -138,7 +140,7 @@ void ACharacter_Greystone::AttackE_Implementation()
 	GetWorldTimerManager().SetTimer(ESkillHandle, this, &ACharacter_Greystone::EndAttack_E, 1.f, true);
 }
 
-void ACharacter_Greystone::AttackR_Implementation()
+void ACharacter_Greystone::AttackR()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingR || Stat->GetCurrentMana() < 0.f)
 		return;
@@ -146,7 +148,7 @@ void ACharacter_Greystone::AttackR_Implementation()
 	IsAttackingR = true;
 	AttackMoving = true;
 	Remaining_SkillR = 10;
-	
+
 	AnimInstance->PlayAttackMontageR();
 
 	Stat->OnAttacking(Mana + 10);
@@ -158,26 +160,21 @@ void ACharacter_Greystone::SkillAttackCheck(int32 damage, float TraceDistance, c
 	if (CurrentWeaponIndex == EWeapon::Sword)
 	{
 		TArray<FHitResult> TraceHits;
-		const float AttackRange = 40.f;
 
 		const FVector TraceStart = GetActorLocation();
-		const FVector TraceEnd = TraceStart + (GetActorForwardVector() * TraceDistance); // 150.0f
+		const FVector TraceEnd = TraceStart + (GetActorForwardVector() * TraceDistance);
 		FCollisionShape SweepShape = FCollisionShape::MakeSphere(100.0f);
 
-		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, CCHANNEL_ATTACK, SweepShape);
+		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape);
 		if (bResult)
 		{
 			for (FHitResult& Hit : TraceHits)
 			{
-				AEnemy* Enemy = Cast<AEnemy>(Hit.Actor);
-				if (Enemy && !Enemy->IsDeath)
+				FDamageEvent DamageEvent;
+				Hit.Actor->TakeDamage(Stat->GetTotalStat().Attack, DamageEvent, GetController(), this);
+				if (Particle)
 				{
-					FDamageEvent DamageEvent;
-					Enemy->TakeDamage(damage, DamageEvent, GetController(), this);
-					if (Particle)
-					{
-						UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, Enemy->GetTransform());
-					}
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, Hit.Actor->GetTransform());
 				}
 			}
 		}
@@ -187,16 +184,40 @@ void ACharacter_Greystone::SkillAttackCheck(int32 damage, float TraceDistance, c
 void ACharacter_Greystone::PressClimbingUp()
 {
 	Super::PressClimbingUp();
-	if (!bIsOnWall && bIsClimbingComplete)
+
+	if (bIsOnWall)
 	{
-		AnimInstance->PlayClimbingComplete();
+		if (bIsClimbingUp && CanPressClimbingUp)
+		{
+			float Duration = AnimInstance->PlayClimbing();
+			CanPressClimbingUp = false;
+			GetWorld()->GetTimerManager().SetTimer(ClimbingTimerHandle, this, &ACharacter_Greystone::ReleaseClimbing, Duration - 0.6f, true);
+		}
 	}
+	
+	else
+	{
+		if (bIsClimbingComplete)
+		{
+			AnimInstance->PlayClimbingComplete();
+			
+		}
+	}
+}
+
+void ACharacter_Greystone::ReleaseClimbing()
+{
+	bIsClimbingUp = false;
+	CanPressClimbingUp = true;
+	bIsClimbingComplete = false;
+	GetWorld()->GetTimerManager().ClearTimer(ClimbingTimerHandle);
 }
 
 void ACharacter_Greystone::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
 	AttackMoving = false;
+
 }
 
 void ACharacter_Greystone::CameraShakeCheck()

@@ -19,5 +19,5 @@ UStaticMesh* UItemDataAsset::GetLazyLoadedMesh()
 
 void UItemDataAsset::Use(ACharacter_Parent* PlayerCharacter)
 {
-    
+
 }

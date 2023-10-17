@@ -7,11 +7,11 @@
 #include "AnimInstance_Greystone.generated.h"
 
 /**
- * 
+ *
  */
 
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit, int32, float,class UParticleSystem*);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit, int32, float, class UParticleSystem*);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_Q, int32, float, class UParticleSystem*);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_E, int32, float, class UParticleSystem*);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_R, int32, float, class UParticleSystem*);
@@ -22,7 +22,7 @@ UCLASS()
 class MYRPGPROJECT_API UAnimInstance_Greystone : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	UAnimInstance_Greystone();
@@ -32,7 +32,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 
-// Play Montage
+	// Play Montage
 public:
 	void PlayDefaultAttackMontage();
 	void PlayAttackMontage();
@@ -47,12 +47,13 @@ public:
 	FName GetAttackMontageName(int32 SectionIndex);
 
 	void PlayClimbingComplete();
+	float PlayClimbing();
+
+	
 
 
 	// AnimNotify
 private:
-	UFUNCTION()
-	void AnimNotify_AttackHit();
 
 	UFUNCTION()
 	void AnimNotify_AttackHit_Q();
@@ -80,7 +81,10 @@ public:
 	bool IsFalling;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
-	bool IsDoubleJump;
+	bool IsDoubleJumping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
+	bool IsJumping;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
 	bool IsCrouched;
@@ -121,23 +125,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ClimbingCompleteMontage;
 
-// Particle System
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	UAnimMontage* ClimbingMontage;
+
+
+	// Particle System
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-	class UParticleSystem* AttackQ_Effect;
+		class UParticleSystem* AttackQ_Effect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-	class UParticleSystem* AttackE_Effect;
+		class UParticleSystem* AttackE_Effect;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
-	class UMyStatComponent* Stat;
+		class UMyStatComponent* Stat;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
-	float TraceDistance;
+		float TraceDistance;
 
 
-// Delegate
+	// Delegate
 public:
 
 	FGOnAttackHit OnAttackHit;

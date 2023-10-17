@@ -4,20 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Character_Parent.h"
-#include "Interface/SkillAttackInterface.h"
 #include "Character_Greystone.generated.h"
 
 /**
- * 
+ *
  */
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
+
 
 UCLASS()
-class MYRPGPROJECT_API ACharacter_Greystone : public ACharacter_Parent , public ISkillAttackInterface
+class MYRPGPROJECT_API ACharacter_Greystone : public ACharacter_Parent
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	ACharacter_Greystone();
@@ -34,22 +33,29 @@ protected:
 
 	virtual void Attack() override;
 
-	virtual void AttackQ_Implementation() override;
-	virtual void AttackE_Implementation() override;
-	virtual void AttackR_Implementation() override;
+	void AttackQ();
+	void AttackE();
+	void AttackR();
+
+
 
 	UFUNCTION()
-	void SkillAttackCheck(int32 damage, float TraceDistance,class UParticleSystem* Particle);
+		void SkillAttackCheck(int32 damage, float TraceDistance, class UParticleSystem* Particle);
 
 	virtual void PressClimbingUp() override;
+
+	void ReleaseClimbing();
+
+	FTimerHandle ClimbingTimerHandle;
+
 
 	virtual void CameraShakeCheck() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-		class UParticleSystem* AttackQ_Effect;
+	class UParticleSystem* AttackQ_Effect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-		class UParticleSystem* AttackE_Effect;
+	class UParticleSystem* AttackE_Effect;
 
 
 private:

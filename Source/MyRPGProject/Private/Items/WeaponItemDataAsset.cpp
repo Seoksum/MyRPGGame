@@ -14,22 +14,28 @@ void UWeaponItemDataAsset::Use(ACharacter_Parent* PlayerCharacter)
 	if (!PlayerCharacter)
 		return;
 
+	if (WeaponMesh.IsPending())
+	{
+		WeaponMesh.LoadSynchronous();
+	}
+	WeaponMeshComponent = WeaponMesh.Get();
+
 	if (ItemName.EqualTo(FText::FromString("WeaponSword")))
 	{
 		PlayerCharacter->SwitchWeaponItemData(EWeapon::Sword, this);
 	}
 	else if (ItemName.EqualTo(FText::FromString("WeaponGun")))
 	{
-		PlayerCharacter->SwitchWeaponItemData(EWeapon::Gun,this);
+		PlayerCharacter->SwitchWeaponItemData(EWeapon::Gun, this);
 	}
 	else if (ItemName.EqualTo(FText::FromString("WeaponBow")))
 	{
-		PlayerCharacter->SwitchWeaponItemData(EWeapon::Bow,this);
+		PlayerCharacter->SwitchWeaponItemData(EWeapon::Bow, this);
 	}
 }
 
 void UWeaponItemDataAsset::WeaponAttack(ACharacter_Parent* InPlayer)
 {
-	
+
 
 }

@@ -2,7 +2,6 @@
 
 
 #include "Components/MyStatComponent.h"
-#include "GameFrameworks/MyGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Interface/HealthInterface.h"
 #include "GameFramework/Actor.h"
@@ -106,10 +105,4 @@ void UMyStatComponent::SetWeaponStat(const FCharacterStat& NewWeaponStat)
 	WeaponStat = NewWeaponStat;
 	OnAddWeaponAttack.Broadcast(WeaponStat.Attack);
 }
-
-void UMyStatComponent::SetTotalStat(const FCharacterStat& TotalStat)
-{
-	
-}
-
 

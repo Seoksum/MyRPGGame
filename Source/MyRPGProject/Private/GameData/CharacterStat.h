@@ -11,50 +11,48 @@ struct FCharacterStat : public FTableRowBase
 	GENERATED_BODY()
 
 public:
-	FCharacterStat() : Attack(0.f), AttackQ(0.f), AttackE(0.f), AttackR(0.f),
-		MaxHp(0.f), MaxMana(0.f), Exp(0.f), Mana(0.f) {}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-		float Attack;
+	float Attack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-		float AttackQ;
+	float AttackQ;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-		float AttackE;
+	float AttackE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-		float AttackR;
+	float AttackR;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-		float MaxHp;
+	float AttackRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-		float MaxMana;
+	float MaxHp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-		float Exp;
+	float MaxMana;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-		float Mana;
+	float Exp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
+	float Mana;
 
 	FCharacterStat operator+(const FCharacterStat& other) const
 	{
-		const float* const ThisPtr = reinterpret_cast<const float* const>(this);
-		const float* const OtherPtr = reinterpret_cast<const float* const>(&other);
-		
 		FCharacterStat Result;
-		float* ResultPtr = reinterpret_cast<float*>(&Result);
-		int32 statNum = sizeof(FCharacterStat) / sizeof(float);
-		for (int32 i = 0; i < statNum; i++)
+
+		const float* BaseStat = reinterpret_cast<const float*>(this);
+		const float* WeaponStat = reinterpret_cast<const float*>(&other);
+		float* ResultStat = reinterpret_cast<float*>(&Result);
+
+		int32 StatNum = sizeof(FCharacterStat) / sizeof(float);
+		for (int32 i = 0; i < StatNum; i++)
 		{
-			ResultPtr[i] = ThisPtr[i] + OtherPtr[i];
+			ResultStat[i] = BaseStat[i] + WeaponStat[i];
 		}
 		return Result;
 	}
-
-
-
 };
 

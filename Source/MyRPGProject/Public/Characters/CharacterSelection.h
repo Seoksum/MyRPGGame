@@ -73,5 +73,4 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<USkeletalMeshComponent*> CountessArray;
 
-
 };
