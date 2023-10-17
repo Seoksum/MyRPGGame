@@ -15,7 +15,7 @@ enum class EItemType : uint8
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class MYRPGPROJECT_API UItemDataAsset : public UPrimaryDataAsset
@@ -26,7 +26,7 @@ public:
 	UStaticMesh* GetLazyLoadedMesh();
 	virtual void Use(class ACharacter_Parent* PlayerCharacter);
 
-	
+
 public:
 
 	FPrimaryAssetId GetPrimaryAssetId() const override

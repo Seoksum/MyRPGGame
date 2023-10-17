@@ -8,12 +8,12 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class MYRPGPROJECT_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 
 	UInventoryComponent();
 
@@ -23,19 +23,19 @@ public:
 
 	void RemoveItem(class UItemDataAsset* Item);
 
-	FORCEINLINE TArray<class UItemDataAsset*> GetDefaultItems() {return DefaultItems;}
-	FORCEINLINE TArray<class UItemDataAsset*> GetItemDataArray() {return ItemDataArray;}
+	FORCEINLINE TArray<class UItemDataAsset*> GetDefaultItems() { return DefaultItems; }
+	FORCEINLINE TArray<class UItemDataAsset*> GetItemDataArray() { return ItemDataArray; }
 
 private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
-	int32 Capacity;
+		int32 Capacity;
 
 	UPROPERTY(EditDefaultsOnly, Instanced)
-	TArray<class UItemDataAsset*> DefaultItems;
+		TArray<class UItemDataAsset*> DefaultItems;
 
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
-	TArray<class UItemDataAsset*> ItemDataArray;
+		TArray<class UItemDataAsset*> ItemDataArray;
 
 public:
 	FOnInventoryUpdated OnInventoryUpdated;

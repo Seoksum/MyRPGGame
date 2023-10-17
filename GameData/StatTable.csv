@@ -1,4 +1,8 @@
 ﻿Name,Attack,AttackQ,AttackE,AttackR,AttackRange,MaxHp,MaxMana,Exp,Mana
+<<<<<<< HEAD
+=======
+,,,,,,,,,
+>>>>>>> 9ef323b64528761c127e0923466adfc9724b2230
 LV1,10,10,15,20,40,50,50,30,5
 LV2,20,20,25,30,45,100,100,40,10
 LV3,25,25,40,50,55,200,150,90,15

@@ -11,6 +11,7 @@
 #include "GameFrameworks/MyGameInstance.h"
 #include "AI/AIController_Enemy.h"
 #include "DrawDebugHelpers.h"
+#include "Weapon_Sword.h"
 #include "AI/AIController_Enemy.h"
 #include "GameData/CharacterEnum.h"
 
@@ -21,6 +22,9 @@ AEnemy_Boss::AEnemy_Boss()
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RightWeaponMesh"));
 	WeaponLeft = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("LeftWeaponMesh"));
+	Weapon->SetupAttachment(GetMesh());
+	WeaponLeft->SetupAttachment(GetMesh());
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SwordMeshLeft(TEXT("SkeletalMesh'/Game/CityofBrass_Enemies/Meshes/Enemy/Sword/enemy_Sword_Mesh.enemy_Sword_Mesh'"));
 	if (SwordMeshLeft.Succeeded())
 	{
@@ -100,8 +104,8 @@ void AEnemy_Boss::AttackCheck()
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	float AttackRange = 500.f;
-	float AttackRadius = 150.f;
+	float AttackRange = 700.f;
+	float AttackRadius = 300.f;
 
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		OUT HitResult,
@@ -134,7 +138,7 @@ void AEnemy_Boss::SkillAttack()
 		GetActorLocation() + GetActorForwardVector() * 1500.f,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel3,
-		FCollisionShape::MakeSphere(100.f),
+		FCollisionShape::MakeSphere(300.f),
 		Params);
 
 	if (bResult)

@@ -17,11 +17,11 @@ void UPotionItemDataAsset::Use(ACharacter_Parent* PlayerCharacter)
 	{
 		if (ItemName.EqualTo(FText::FromString("HpPotion")))
 		{
-			Stat->UseHpPotion(IncreasingVal);
+			Stat->UseHpPotion(IncreasingVal); // HpPotionVal = 15.f;
 		}
 		else if (ItemName.EqualTo(FText::FromString("ManaPotion")))
 		{
-			Stat->UseManaPotion(IncreasingVal);
+			Stat->UseManaPotion(IncreasingVal); // ManaPotionVal = 15.f;
 		}
 	}
 	

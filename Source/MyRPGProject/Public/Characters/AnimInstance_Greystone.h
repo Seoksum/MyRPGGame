@@ -7,11 +7,11 @@
 #include "AnimInstance_Greystone.generated.h"
 
 /**
- * 
+ *
  */
 
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit, int32, float,class UParticleSystem*);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit, int32, float, class UParticleSystem*);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_Q, int32, float, class UParticleSystem*);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_E, int32, float, class UParticleSystem*);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_R, int32, float, class UParticleSystem*);
@@ -22,7 +22,7 @@ UCLASS()
 class MYRPGPROJECT_API UAnimInstance_Greystone : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	UAnimInstance_Greystone();
@@ -32,7 +32,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 
-// Play Montage
+	// Play Montage
 public:
 	void PlayDefaultAttackMontage();
 	void PlayAttackMontage();
@@ -48,7 +48,6 @@ public:
 
 	void PlayClimbingComplete();
 	float PlayClimbing();
-
 
 	// AnimNotify
 private:
@@ -125,7 +124,7 @@ protected:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
-		UAnimMontage* ClimbingMontage;
+	UAnimMontage* ClimbingMontage;
 
 
 	// Particle System
@@ -144,7 +143,7 @@ private:
 		float TraceDistance;
 
 
-// Delegate
+	// Delegate
 public:
 
 	FGOnAttackHit OnAttackHit;

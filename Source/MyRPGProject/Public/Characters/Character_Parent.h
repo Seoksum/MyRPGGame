@@ -110,7 +110,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool IsDoubleJumping;
 
-	UPROPERTY(EditDefaultsOnly, Category = "State")
+	UPROPERTY(EditDefaultsOnly, Category ="State")
 	int32 CurrentWeaponIndex;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")

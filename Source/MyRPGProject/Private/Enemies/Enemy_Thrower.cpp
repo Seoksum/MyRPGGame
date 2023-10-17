@@ -68,7 +68,7 @@ void AEnemy_Thrower::ThrowProjectile()
 {
 	// 플레이어를 인식한 후 그 곳을 향해 던지기
 	ACharacter* Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	
+
 	if (Player == nullptr)
 		return;
 
@@ -78,7 +78,7 @@ void AEnemy_Thrower::ThrowProjectile()
 	FVector SpawnLocation = GetMesh()->GetSocketLocation(FName("ProjectileSocket"));
 	FRotator SpawnRotation = GetActorForwardVector().Rotation();
 	FTransform SpawnTransform(SpawnRotation, SpawnLocation);
-	
+
 	Projectile = GetWorld()->SpawnActor<AEnemyProjectile>(ProjectileClass, SpawnTransform);
 	FVector NewFOV = FMath::VInterpTo(Projectile->GetActorLocation(), Player->GetActorLocation(), GetWorld()->DeltaTimeSeconds, 20.f);
 	Projectile->SetActorLocation(NewFOV);

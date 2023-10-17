@@ -91,7 +91,7 @@ void AEnemy::OnDeath_Implementation()
 	{
 		MyGameMode->PawnKilled(this);
 	}
-	
+
 	OnEnemyDeath.Broadcast(EnemyExp);
 	DetachFromControllerPendingDestroy();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

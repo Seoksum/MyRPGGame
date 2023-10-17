@@ -79,7 +79,7 @@ void AMyGameModeBase::PawnKilled(class APawn* PawnKilled)
 	for (AAIController_Enemy* Controller : TActorRange<AAIController_Enemy>(GetWorld()))
 	{
 		if (!Controller->IsBossAIDead())
-		{		
+		{
 			return; // 현재 레벨에서 죽어있는 AI가 없다면 조기 return 
 		}
 	}

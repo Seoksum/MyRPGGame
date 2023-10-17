@@ -21,7 +21,7 @@
 ACharacter_Greystone::ACharacter_Greystone()
 {
 
-	
+
 }
 
 void ACharacter_Greystone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -81,7 +81,7 @@ void ACharacter_Greystone::PostInitializeComponents()
 
 		AnimInstance->OnMontageEnded.AddDynamic(this, &ACharacter_Greystone::OnAttackMontageEnded);
 		AnimInstance->OnCameraShake.AddUObject(this, &ACharacter_Greystone::CameraShakeCheck);
-		
+
 	}
 }
 

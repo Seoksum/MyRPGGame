@@ -45,4 +45,3 @@ FCharacterStat UMyGameSingleton::GetCharacterStat(int32 Level)
 	}
 	return FCharacterStat();
 }
-

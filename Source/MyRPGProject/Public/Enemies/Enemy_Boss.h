@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Enemies/Enemy.h"
+#include "Interface/EnemyAIInterface.h"
 #include "Interface/AIEnemyInterface.h"
 #include "Enemy_Boss.generated.h"
 
@@ -17,7 +18,7 @@ UCLASS()
 class MYRPGPROJECT_API AEnemy_Boss : public AEnemy, public IAIEnemyInterface
 {
 	GENERATED_BODY()
-	
+
 
 public:
 

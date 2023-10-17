@@ -7,16 +7,16 @@
 #include "Character_Greystone.generated.h"
 
 /**
- * 
+ *
  */
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
+
 
 UCLASS()
 class MYRPGPROJECT_API ACharacter_Greystone : public ACharacter_Parent
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	ACharacter_Greystone();
@@ -37,12 +37,18 @@ protected:
 	void AttackE();
 	void AttackR();
 
+
 	UFUNCTION()
-	void SkillAttackCheck(int32 damage, float TraceDistance,class UParticleSystem* Particle);
+		void SkillAttackCheck(int32 damage, float TraceDistance, class UParticleSystem* Particle);
 
 	virtual void PressClimbingUp() override;
 	void ReleaseClimbing();
 	FTimerHandle ClimbingTimerHandle;
+
+	void ReleaseClimbing();
+
+	FTimerHandle ClimbingTimerHandle;
+
 
 	virtual void CameraShakeCheck() override;
 

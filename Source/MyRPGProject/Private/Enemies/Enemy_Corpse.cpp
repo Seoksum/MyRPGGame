@@ -26,13 +26,13 @@ AEnemy_Corpse::AEnemy_Corpse()
 
 	// Weapon Mesh
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	Weapon->SetupAttachment(GetMesh());
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SwordMesh(TEXT("SkeletalMesh'/Game/CityofBrass_Enemies/Meshes/Enemy/Sword/enemy_Sword_Mesh.enemy_Sword_Mesh'"));
 	if (SwordMesh.Succeeded())
 	{
 		Weapon->SetSkeletalMesh(SwordMesh.Object);
 	}
 	Weapon->SetCollisionProfileName(FName("NoCollision"));
-
 
 	Level = 2;
 	EnemyExp = 15;
@@ -43,16 +43,16 @@ void AEnemy_Corpse::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 }
 
 void AEnemy_Corpse::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	Stat->SetLevelStat(Level);
 	if (Weapon)
 	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("LeftSwordSocket"));
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("SwordSocket"));
 	}
 
 	if (AnimInstance)
@@ -81,7 +81,7 @@ void AEnemy_Corpse::Attack()
 
 	AnimInstance->PlayAttackMontage_Corpse();
 	IsAttacking = true;
-	
+
 }
 
 void AEnemy_Corpse::AttackCheck()

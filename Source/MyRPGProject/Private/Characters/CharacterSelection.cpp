@@ -55,6 +55,13 @@ void ACharacterSelection::BeginPlay()
 
 	GreyStoneArray[0]->SetVisibility(true);
 
+	ACharacterSelectController* PlayerController =
+		Cast<ACharacterSelectController>(GetWorld()->GetFirstPlayerController());
+
+	if (PlayerController)
+	{
+		//PlayerController->CreateCharacterMenu();
+	}
 }
 
 void ACharacterSelection::SelectCharacter(int32 Index)

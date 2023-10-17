@@ -120,6 +120,8 @@ void UAnimInstance_Countess::PlayBowAttackMontage()
 
 void UAnimInstance_Countess::JumpToSection_Default(int32 SectionIndex)
 {
+	FName Name = GetAttackMontageName(SectionIndex);
+	Montage_JumpToSection(Name, AttackMontage_Default);
 }
 
 void UAnimInstance_Countess::JumpToSection(int32 SectionIndex)

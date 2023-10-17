@@ -7,16 +7,16 @@
 #include "Character_Countess.generated.h"
 
 /**
- * 
+ *
  */
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
+
 
 UCLASS()
 class MYRPGPROJECT_API ACharacter_Countess : public ACharacter_Parent
 {
 	GENERATED_BODY()
-	
+
 
 public:
 
@@ -61,12 +61,18 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		int32 TotalAttackIndex;
 
+	UPROPERTY(VisibleAnywhere)
+	int32 TotalAttackIndex;
+
 	UPROPERTY()
 		int32 AttackIndex = 0;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		class USkeletalMeshComponent* LeftSword;
+	class USkeletalMeshComponent* LeftSword;
+
+
+	class USkeletalMeshComponent* LeftSword;
 
 
 };

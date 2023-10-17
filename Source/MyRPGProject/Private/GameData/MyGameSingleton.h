@@ -30,11 +30,8 @@ public:
 
 	FORCEINLINE TArray<FCharacterStat> GetCharacterStatTable() const { return CharacterStatTable; }
 	
-	
 
 private:
 
 	TArray<FCharacterStat> CharacterStatTable;
-
-
 };

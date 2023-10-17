@@ -12,7 +12,6 @@
 // Sets default values
 AEnemyProjectile::AEnemyProjectile()
 {
-
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(35.f);
 	CollisionComp->SetCollisionProfileName(FName("Enemy"));
@@ -36,7 +35,7 @@ AEnemyProjectile::AEnemyProjectile()
 		MeshComp->SetStaticMesh(SM.Object);
 	}
 
-	BaseDamage = 15.f;
+	BaseDamage = 5.f;
 	InitialLifeSpan = 2.f;
 }
 
@@ -53,7 +52,6 @@ void AEnemyProjectile::BeginPlay()
 
 }
 
-
 void AEnemyProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	ACharacter* Player = Cast<ACharacter>(OtherActor);
@@ -62,6 +60,6 @@ void AEnemyProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 	{
 		Player->TakeDamage(BaseDamage, DamageEvent, GetInstigatorController(), GetOwner());
 	}
-
+	
 }
 

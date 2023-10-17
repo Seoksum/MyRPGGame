@@ -29,7 +29,7 @@ AItemBox::AItemBox()
 void AItemBox::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	UAssetManager& Manager = UAssetManager::Get();
 	TArray<FPrimaryAssetId> Assets;
 	Manager.GetPrimaryAssetIdList(TEXT("ItemDataAsset"), Assets);

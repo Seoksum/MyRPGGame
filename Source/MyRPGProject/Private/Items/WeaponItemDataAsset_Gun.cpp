@@ -35,7 +35,7 @@ void UWeaponItemDataAsset_Gun::Fire()
 		FVector EyeLocation;
 		FRotator EyeRotation;
 		Player->GetActorEyesViewPoint(EyeLocation, EyeRotation); // OUT parameter
-		
+
 		FVector TraceStart = WeaponMeshComponent->GetSocketLocation(MuzzleSocketName);
 		FVector ShotDirection = EyeRotation.Vector();
 		FVector TraceEnd = TraceStart + (ShotDirection * 3000); // 종료 지점
@@ -45,6 +45,7 @@ void UWeaponItemDataAsset_Gun::Fire()
 		QueryParams.AddIgnoredActor(Player);
 
 		bool bHit = Player->GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ATTACK, QueryParams);
+
 		if (bHit)
 		{
 			AEnemy* Enemy = Cast<AEnemy>(Hit.GetActor());
@@ -58,7 +59,6 @@ void UWeaponItemDataAsset_Gun::Fire()
 			{
 				PlayImpactEffects(Hit.ImpactPoint, DefaultImpactEffect);
 			}
-
 			TraceEndPoint = Hit.ImpactPoint;
 		}
 
@@ -78,7 +78,6 @@ void UWeaponItemDataAsset_Gun::WeaponAttack(ACharacter_Parent* InPlayer)
 
 	Player = InPlayer;
 	StartFire();
-	
 }
 
 void UWeaponItemDataAsset_Gun::StartFire()

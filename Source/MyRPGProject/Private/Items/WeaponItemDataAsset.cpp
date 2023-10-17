@@ -26,16 +26,16 @@ void UWeaponItemDataAsset::Use(ACharacter_Parent* PlayerCharacter)
 	}
 	else if (ItemName.EqualTo(FText::FromString("WeaponGun")))
 	{
-		PlayerCharacter->SwitchWeaponItemData(EWeapon::Gun,this);
+		PlayerCharacter->SwitchWeaponItemData(EWeapon::Gun, this);
 	}
 	else if (ItemName.EqualTo(FText::FromString("WeaponBow")))
 	{
-		PlayerCharacter->SwitchWeaponItemData(EWeapon::Bow,this);
+		PlayerCharacter->SwitchWeaponItemData(EWeapon::Bow, this);
 	}
 }
 
 void UWeaponItemDataAsset::WeaponAttack(ACharacter_Parent* InPlayer)
 {
-	
+
 
 }

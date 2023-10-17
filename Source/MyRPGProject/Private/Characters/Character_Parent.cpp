@@ -89,7 +89,7 @@ void ACharacter_Parent::BeginPlay()
 	Super::BeginPlay();
 
 	DefaultFOV = Camera->FieldOfView;
-	
+
 	Stat->SetLevelStat(Level);
 }
 

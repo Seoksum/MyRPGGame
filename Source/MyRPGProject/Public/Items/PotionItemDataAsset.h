@@ -7,7 +7,7 @@
 #include "PotionItemDataAsset.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class MYRPGPROJECT_API UPotionItemDataAsset : public UItemDataAsset
@@ -27,7 +27,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
-	float IncreasingVal = 15.f;
+		float IncreasingVal = 15.f;
 
 
 };

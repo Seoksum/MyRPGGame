@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
+
 // Sets default values
 AArrow::AArrow()
 {
@@ -35,7 +36,7 @@ AArrow::AArrow()
 	ProjectileMovementComp->MaxSpeed = 5000.f;
 	ProjectileMovementComp->bRotationFollowsVelocity = false;
 	ProjectileMovementComp->bInitialVelocityInLocalSpace = true;
-	
+
 	SetActorLocation(FVector(0.f, 0.f, 30.f));
 
 	MuzzleSocketName = "MuzzleSocket";
@@ -47,14 +48,14 @@ AArrow::AArrow()
 void AArrow::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (DefaultEffect)
 	{
 		UGameplayStatics::SpawnEmitterAttached(DefaultEffect, MeshComp, MuzzleSocketName);
 	}
 }
 
-void AArrow::OnBeginOverlap(UPrimitiveComponent* OverlappedcComp, AActor* OtherActor, 
+void AArrow::OnBeginOverlap(UPrimitiveComponent* OverlappedcComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	FDamageEvent DamageEvent;

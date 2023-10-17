@@ -19,10 +19,11 @@ UWeaponItemDataAsset_Bow::UWeaponItemDataAsset_Bow()
 	ArrowSpeedVal = 4000.f;
 }
 
+
 void UWeaponItemDataAsset_Bow::WeaponAttack(class ACharacter_Parent* InPlayer)
 {
 	Super::WeaponAttack(InPlayer);
-	
+
 	Player = InPlayer;
 	Fire();
 }

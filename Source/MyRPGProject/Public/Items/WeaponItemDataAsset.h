@@ -17,13 +17,13 @@ enum class EWeaponType : uint8
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class MYRPGPROJECT_API UWeaponItemDataAsset : public UItemDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	virtual void Use(class ACharacter_Parent* PlayerCharacter) override;
@@ -40,6 +40,17 @@ public:
 	FCharacterStat WeaponStat;
 
 	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
+		TSoftObjectPtr<USkeletalMesh> WeaponMesh;
+
+	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
+		TSoftObjectPtr<USkeletalMeshComponent> WeaponMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
+		EWeaponType WeaponType;
+
+	FCharacterStat WeaponStat;
+
+	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
 
 	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
@@ -48,12 +59,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
 	EWeaponType WeaponType;
 
-
-
 protected:
 
-	UPROPERTY(VisibleAnywhere,Category="Player")
-	class ACharacter_Parent* Player;
+	UPROPERTY(VisibleAnywhere, Category = "Player")
+		class ACharacter_Parent* Player;
 
-	
+
 };
