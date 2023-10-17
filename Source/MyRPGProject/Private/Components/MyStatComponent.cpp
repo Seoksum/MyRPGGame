@@ -31,7 +31,7 @@ void UMyStatComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	SetLevelStat(CurrentLevel);
-	//MyGameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	
 }
 
 
@@ -39,6 +39,7 @@ void UMyStatComponent::SetLevelStat(int32 NewLevel)
 {
 	CurrentLevel = FMath::Clamp<float>(NewLevel, 1, UMyGameSingleton::Get().MaxLevel);
 	BaseStat = UMyGameSingleton::Get().GetCharacterStat(CurrentLevel-1);
+
 	SetHp(GetTotalStat().MaxHp); 
 	SetMana(GetTotalStat().MaxMana);
 	
@@ -58,7 +59,6 @@ void UMyStatComponent::SetHp(float Hp)
 		}
 	}
 	OnHpChanged.Broadcast(CurrentHp);
-
 }
 
 void UMyStatComponent::SetMana(float Mana)

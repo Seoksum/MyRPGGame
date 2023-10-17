@@ -12,12 +12,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
 #include "UI/HPWidget.h"
-#include "Weapon_Gun.h"
-#include "Weapon_Sword.h"
 #include "Camera/CameraComponent.h"
 #include "Enemies/Enemy.h"
 #include "Items/WeaponItemDataAsset_Sword.h"
-#include "Physics/ABCollision.h"
+#include "GameData/GameCollision.h"
 #include "GameData/CharacterEnum.h"
 
 
@@ -25,17 +23,16 @@ ACharacter_Greystone::ACharacter_Greystone()
 {
 	Mana = 5;
 
-	//MyGameInstanceRef = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-
+	
 }
 
 void ACharacter_Greystone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction(TEXT("Attack_Q"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackQ_Implementation);
-	PlayerInputComponent->BindAction(TEXT("Attack_E"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackE_Implementation);
-	PlayerInputComponent->BindAction(TEXT("Attack_R"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackR_Implementation);
+	PlayerInputComponent->BindAction(TEXT("Attack_Q"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackQ);
+	PlayerInputComponent->BindAction(TEXT("Attack_E"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackE);
+	PlayerInputComponent->BindAction(TEXT("Attack_R"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackR);
 }
 
 void ACharacter_Greystone::Tick(float DeltaTime)
@@ -62,7 +59,7 @@ void ACharacter_Greystone::BeginPlay()
 
 	GetMesh()->HideBoneByName(TEXT("sword_bottom"), EPhysBodyOp::PBO_None);
 
-
+	Mana = Stat->GetTotalStat().Mana;
 }
 
 void ACharacter_Greystone::PostInitializeComponents()
@@ -110,10 +107,9 @@ void ACharacter_Greystone::Attack()
 		AnimInstance->PlayBowAttackMontage();
 		IsAttacking = true;
 	}
-
 }
 
-void ACharacter_Greystone::AttackQ_Implementation()
+void ACharacter_Greystone::AttackQ()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingQ || Stat->GetCurrentMana() < 0.f)
 		return;
@@ -125,7 +121,7 @@ void ACharacter_Greystone::AttackQ_Implementation()
 	GetWorldTimerManager().SetTimer(QSkillHandle, this, &ACharacter_Greystone::EndAttack_Q, 1.f, true);
 }
 
-void ACharacter_Greystone::AttackE_Implementation()
+void ACharacter_Greystone::AttackE()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingE || Stat->GetCurrentMana() < 0.f)
 		return;
@@ -138,7 +134,7 @@ void ACharacter_Greystone::AttackE_Implementation()
 	GetWorldTimerManager().SetTimer(ESkillHandle, this, &ACharacter_Greystone::EndAttack_E, 1.f, true);
 }
 
-void ACharacter_Greystone::AttackR_Implementation()
+void ACharacter_Greystone::AttackR()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingR || Stat->GetCurrentMana() < 0.f)
 		return;
@@ -158,13 +154,12 @@ void ACharacter_Greystone::SkillAttackCheck(int32 damage, float TraceDistance, c
 	if (CurrentWeaponIndex == EWeapon::Sword)
 	{
 		TArray<FHitResult> TraceHits;
-		const float AttackRange = 40.f;
 
 		const FVector TraceStart = GetActorLocation();
 		const FVector TraceEnd = TraceStart + (GetActorForwardVector() * TraceDistance); // 150.0f
 		FCollisionShape SweepShape = FCollisionShape::MakeSphere(100.0f);
 
-		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, CCHANNEL_ATTACK, SweepShape);
+		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape);
 		if (bResult)
 		{
 			for (FHitResult& Hit : TraceHits)

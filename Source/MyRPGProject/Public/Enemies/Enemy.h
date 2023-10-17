@@ -36,6 +36,7 @@ public:
 
 	virtual void Attack();
 
+
 	
 protected:
 

@@ -21,12 +21,12 @@ void UInventoryComponent::BeginPlay()
 
 	for (auto& Item : DefaultItems)
 	{
-		AddItemData(Item);
+		AddItem(Item);
 	}
 }
 
 
-void UInventoryComponent::AddItemData(UItemDataAsset* Item)
+void UInventoryComponent::AddItem(UItemDataAsset* Item)
 {
 	if (ItemDataArray.Num() >= Capacity || !Item)
 		return;
@@ -37,13 +37,11 @@ void UInventoryComponent::AddItemData(UItemDataAsset* Item)
 	OnInventoryUpdated.Broadcast();
 }
 
-void UInventoryComponent::RemoveItemData(UItemDataAsset* Item)
+void UInventoryComponent::RemoveItem(UItemDataAsset* Item)
 {
 	Item->OwingInventory = nullptr;
 	ItemDataArray.RemoveSingle(Item);
 	OnInventoryUpdated.Broadcast();
-
-	return;
 }
 
 

@@ -165,16 +165,7 @@ void UAnimInstance_Greystone::PlayClimbingComplete()
 
 void UAnimInstance_Greystone::AnimNotify_AttackHit()
 {
-	//auto Player = Cast<ACharacter_Greystone>(TryGetPawnOwner());
-	//if (Player)
-	//{
-	//	auto Stat = Player->GetMyStatComponent();
-	//	if (Stat)
-	//	{
-	//		TraceDistance = 150.f;
-	//		OnAttackHit.Broadcast(Stat->GetTotalStat().Attack, TraceDistance, nullptr);
-	//	}
-	//}
+	
 }
 
 void UAnimInstance_Greystone::AnimNotify_AttackHit_Q()
@@ -198,17 +189,6 @@ void UAnimInstance_Greystone::AnimNotify_AttackHit_E()
 
 void UAnimInstance_Greystone::AnimNotify_AttackHit_R()
 {
-	//auto Player = Cast<ACharacter_Greystone>(TryGetPawnOwner());
-	//if (Player)
-	//{
-	//	auto Stat = Player->GetMyStatComponent();
-	//	if (Stat)
-	//	{
-	//		TraceDistance = 400.f;
-	//		OnAttackHit_R.Broadcast(Stat->GetTotalStat().AttackR, TraceDistance, nullptr);
-	//	}
-	//}
-
 	if (Stat)
 	{
 		TraceDistance = 400.f;

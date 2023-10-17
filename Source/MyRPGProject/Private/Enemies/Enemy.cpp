@@ -104,18 +104,14 @@ void AEnemy::OnDeath_Implementation()
 
 void AEnemy::EnemyDeath()
 {
-	FRotator SpawnRotation;
-	FVector SpawnLocation = GetActorLocation();
-	FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+	FTransform SpawnTransform(FRotator(0.f, 0.f, 0.f), GetActorLocation());
 
 	ItemBox = GetWorld()->SpawnActorDeferred<AItemBox>(ItemBoxClass, SpawnTransform);
-	if (ItemBoxIndex != 0)
+	if (ItemBox)
 	{
-		ItemBox->RandomIndex = ItemBoxIndex;
+		ItemBox->BoxIndex = ItemBoxIndex;
+		UGameplayStatics::FinishSpawningActor(ItemBox, SpawnTransform);
 	}
-
-	UGameplayStatics::FinishSpawningActor(ItemBox, SpawnTransform);
-
 	GetWorldTimerManager().ClearTimer(DeathTimerHandle);
 }
 

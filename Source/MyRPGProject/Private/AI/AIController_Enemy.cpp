@@ -7,9 +7,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Enemies/Enemy.h"
-#include "Characters/Character_Parent.h"
 #include "GameData/CharacterEnum.h"
+#include "Interface/AIEnemyInterface.h"
 
 
 const FName AAIController_Enemy::HomePosKey(TEXT("HomePos"));
@@ -36,16 +35,12 @@ void AAIController_Enemy::OnPossess(APawn* InPawn)
 
 	if (UseBlackboard(BlackboardData, Blackboard))
 	{
-		AEnemy* Enemy = Cast<AEnemy>(InPawn);
-
 		Blackboard->SetValueAsVector(HomePosKey, InPawn->GetActorLocation());
-		//Blackboard->SetValueAsObject(FName(TEXT("Enemy")), Enemy);
 		Blackboard->SetValueAsObject(FName(TEXT("Enemy")), InPawn);
 
 		if (RunBehaviorTree(BehaviorTree))
 		{
 			// TODO
-
 		}
 	}
 }
@@ -57,18 +52,14 @@ void AAIController_Enemy::OnUnPossess()
 
 }
 
-bool AAIController_Enemy::IsDead() const
+bool AAIController_Enemy::IsBossAIDead() const
 {
-	AEnemy* ControlledEnemy = Cast<AEnemy>(GetPawn());
-	if (ControlledEnemy)
+	IAIEnemyInterface* BossEnemy = Cast<IAIEnemyInterface>(GetPawn());
+	if (BossEnemy)
 	{
-		return ControlledEnemy->IsDeath;
-
-		//bool bIsEnemyDeath = ControlledEnemy->EnemyIndex == EEnemy::SkeletonEnemy && ControlledEnemy->IsDeath;
-		//bool bIsBossDeath = ControlledEnemy->EnemyIndex == EEnemy::BossEnemy && ControlledEnemy->IsDeath;
-		//return bIsEnemyDeath && bIsBossDeath;
+		return BossEnemy->IsBossEnemyDead();
 	}
 
-	return true; // AI가 죽으면 폰이 AI 컨트롤러와 분리됨
+	return false;
 }
 

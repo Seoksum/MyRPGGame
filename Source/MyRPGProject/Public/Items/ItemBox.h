@@ -45,7 +45,7 @@ public:
 	int32 WeaponCount;
 
 	UPROPERTY(EditAnywhere, Category = "Item")
-	int32 RandomIndex;
+	int32 BoxIndex;
 
 
 

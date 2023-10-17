@@ -65,6 +65,5 @@ private:
 	/*UPROPERTY(EditAnywhere)
 	TSubclassOf<class AWeapon_Gun> GunClass_L;*/
 
-	UPROPERTY()
-	class AWeapon_Sword* Sword_L;
+
 };

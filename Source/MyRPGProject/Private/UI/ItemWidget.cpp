@@ -30,7 +30,7 @@ void UItemWidget::OnClickedUseButton()
 	ICharacterItemInterface* Player = Cast<ICharacterItemInterface>(GetOwningPlayerPawn());
 	if (Player)
 	{
-		Player->UseItemDataAsset(ItemData);
+		Player->UseItem(ItemData);
 	}
 
 }

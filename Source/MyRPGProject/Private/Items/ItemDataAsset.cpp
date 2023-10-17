@@ -13,7 +13,7 @@ UStaticMesh* UItemDataAsset::GetLazyLoadedMesh()
         const FSoftObjectPath& AssetRef = Mesh.ToStringReference();
         Mesh = Cast<UStaticMesh>(Streamable.LoadSynchronous(AssetRef));
     }
-
+    
     return Mesh.Get();
 }
 

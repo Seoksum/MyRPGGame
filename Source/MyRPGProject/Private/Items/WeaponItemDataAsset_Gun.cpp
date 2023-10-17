@@ -12,6 +12,7 @@
 #include "Characters/Character_Parent.h"
 #include "Enemies/Enemy.h"
 #include "TimerManager.h"
+#include "GameData/GameCollision.h"
 
 
 // Sets default values
@@ -43,7 +44,7 @@ void UWeaponItemDataAsset_Gun::Fire()
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(Player);
 
-		bool bHit = Player->GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_GameTraceChannel3, QueryParams);
+		bool bHit = Player->GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ATTACK, QueryParams);
 		if (bHit)
 		{
 			AEnemy* Enemy = Cast<AEnemy>(Hit.GetActor());
@@ -118,9 +119,6 @@ void UWeaponItemDataAsset_Gun::PlayImpactEffects(FVector ImpactPoint, UParticleS
 {
 	if (Particle)
 	{
-		FVector MuzzleLocation = WeaponMeshComponent->GetSocketLocation(MuzzleSocketName);
-		FVector ShotDirection = ImpactPoint - MuzzleLocation;
-		ShotDirection.Normalize();
-		UGameplayStatics::SpawnEmitterAtLocation(Player->GetWorld(), Particle, ImpactPoint, ShotDirection.Rotation());
+		UGameplayStatics::SpawnEmitterAtLocation(Player->GetWorld(), Particle, ImpactPoint);
 	}
 }

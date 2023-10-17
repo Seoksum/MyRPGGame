@@ -51,8 +51,8 @@ void ACharacter_Countess::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
-	GetMesh()->HideBoneByName(TEXT("weapon_l"), EPhysBodyOp::PBO_None);
+	//GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	//GetMesh()->HideBoneByName(TEXT("weapon_l"), EPhysBodyOp::PBO_None);
 
 	/*Sword_L = GetWorld()->SpawnActor<AWeapon_Sword>(SwordClass);
 

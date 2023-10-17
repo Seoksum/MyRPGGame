@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interface/HealthInterface.h"
-#include "Interface/AnimationAttackInterface.h"
+#include "Interface/AttackHitCheckInterface.h"
 #include "Interface/CharacterItemInterface.h"
 #include "Interface/InGameWidgetInterface.h"
 #include "Interface/PlayerStateInterface.h"
@@ -14,7 +14,7 @@
 
 
 UCLASS()
-class MYRPGPROJECT_API ACharacter_Parent : public ACharacter, public IHealthInterface, public IAnimationAttackInterface, public ICharacterItemInterface, public IInGameWidgetInterface, public IPlayerStateInterface
+class MYRPGPROJECT_API ACharacter_Parent : public ACharacter, public IHealthInterface, public IAttackHitCheckInterface, public ICharacterItemInterface, public IInGameWidgetInterface, public IPlayerStateInterface
 {
 	GENERATED_BODY()
 
@@ -171,9 +171,6 @@ protected:
 	UPROPERTY()
 	float Mana;
 
-	UPROPERTY()
-	class AWeapon* CurrentWeapon;
-
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HpBar;
 
@@ -208,13 +205,13 @@ protected:
 	//Item Data Asset 
 protected:
 
-	bool AddItemAssetToInventory(class UItemDataAsset* Item);
+	bool AddItemToInventory(class UItemDataAsset* Item);
 
 	virtual void TakeItem(class AItemBox* ItemBox) override;
 	//virtual void UsePotion(class UItemDataAsset* InItemData);
 	//virtual void EquipWeapon(class UItemDataAsset* InItemData);
 
-	virtual void UseItemDataAsset(class UItemDataAsset* Item) override;
+	virtual void UseItem(class UItemDataAsset* Item) override;
 
 	void SetupPlayerView(FVector Location, FVector SocketOffset);
 

@@ -24,7 +24,7 @@ public:
 	static const FName HomePosKey;
 	static const FName PatrolPosKey;
 
-	bool IsDead() const;
+	bool IsBossAIDead() const;
 
 
 private:

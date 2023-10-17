@@ -87,28 +87,28 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleInstanceOnly, Category = "Stat")
-		float MaxHp;
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	float MaxHp;
 
-	UPROPERTY(VisibleInstanceOnly, Category = "Stat")
-		float MaxMana;
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	float MaxMana;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
-		float CurrentHp;
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat")
+	float CurrentHp;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
-		float CurrentMana;
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat")
+	float CurrentMana;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
-		float CurrentExp;
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat")
+	float CurrentExp;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
+	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat")
 	float CurrentLevel;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	FCharacterStat BaseStat;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	FCharacterStat WeaponStat;
 
 

@@ -14,6 +14,12 @@ void UWeaponItemDataAsset::Use(ACharacter_Parent* PlayerCharacter)
 	if (!PlayerCharacter)
 		return;
 
+	if (WeaponMesh.IsPending())
+	{
+		WeaponMesh.LoadSynchronous();
+	}
+	WeaponMeshComponent = WeaponMesh.Get();
+
 	if (ItemName.EqualTo(FText::FromString("WeaponSword")))
 	{
 		PlayerCharacter->SwitchWeaponItemData(EWeapon::Sword, this);

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Character_Parent.h"
-#include "Interface/SkillAttackInterface.h"
 #include "Character_Greystone.generated.h"
 
 /**
@@ -14,7 +13,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
 
 UCLASS()
-class MYRPGPROJECT_API ACharacter_Greystone : public ACharacter_Parent , public ISkillAttackInterface
+class MYRPGPROJECT_API ACharacter_Greystone : public ACharacter_Parent
 {
 	GENERATED_BODY()
 	
@@ -34,9 +33,9 @@ protected:
 
 	virtual void Attack() override;
 
-	virtual void AttackQ_Implementation() override;
-	virtual void AttackE_Implementation() override;
-	virtual void AttackR_Implementation() override;
+	void AttackQ();
+	void AttackE();
+	void AttackR();
 
 	UFUNCTION()
 	void SkillAttackCheck(int32 damage, float TraceDistance,class UParticleSystem* Particle);

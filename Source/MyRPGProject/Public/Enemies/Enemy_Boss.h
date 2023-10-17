@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Enemies/Enemy.h"
+#include "Interface/AIEnemyInterface.h"
 #include "Enemy_Boss.generated.h"
 
 /**
@@ -13,7 +14,7 @@
 
 
 UCLASS()
-class MYRPGPROJECT_API AEnemy_Boss : public AEnemy
+class MYRPGPROJECT_API AEnemy_Boss : public AEnemy, public IAIEnemyInterface
 {
 	GENERATED_BODY()
 	
@@ -24,6 +25,8 @@ public:
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	virtual bool IsBossEnemyDead() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -50,7 +53,7 @@ public:
 	bool JumpAttacking;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-		TSubclassOf<UCameraShakeBase> AttackedCamShake;
+	TSubclassOf<UCameraShakeBase> AttackedCamShake;
 
 	UPROPERTY(EditAnywhere, Category = "Mesh")
 	class USkeletalMeshComponent* WeaponLeft;

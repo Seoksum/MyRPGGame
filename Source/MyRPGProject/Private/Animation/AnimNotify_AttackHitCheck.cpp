@@ -2,7 +2,7 @@
 
 
 #include "Animation/AnimNotify_AttackHitCheck.h"
-#include "Interface/AnimationAttackInterface.h"
+#include "Interface/AttackHitCheckInterface.h"
 
 void UAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
@@ -10,12 +10,11 @@ void UAnimNotify_AttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 
 	if (MeshComp)
 	{
-		IAnimationAttackInterface* Player = Cast<IAnimationAttackInterface>(MeshComp->GetOwner()); // Owner´Â Sword
+		IAttackHitCheckInterface* Player = Cast<IAttackHitCheckInterface>(MeshComp->GetOwner());
 		if (Player)
 		{
 			Player->AttackHitCheck();
 		}
 	}
-
 }
 

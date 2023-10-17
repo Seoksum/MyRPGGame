@@ -11,7 +11,6 @@
 #include "AI/AIController_Enemy.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Weapon_Sword.h"
 #include "GameData/CharacterEnum.h"
 
 

@@ -19,9 +19,9 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void AddItemData(class UItemDataAsset* Item);
+	void AddItem(class UItemDataAsset* Item);
 
-	void RemoveItemData(class UItemDataAsset* Item);
+	void RemoveItem(class UItemDataAsset* Item);
 
 	FORCEINLINE TArray<class UItemDataAsset*> GetDefaultItems() {return DefaultItems;}
 	FORCEINLINE TArray<class UItemDataAsset*> GetItemDataArray() {return ItemDataArray;}

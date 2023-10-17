@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "CharacterItemInterface.generated.h"
+#include "AttackHitCheckInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UCharacterItemInterface : public UInterface
+class UAttackHitCheckInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,17 +16,13 @@ class UCharacterItemInterface : public UInterface
 /**
  * 
  */
-class MYRPGPROJECT_API ICharacterItemInterface
+class MYRPGPROJECT_API IAttackHitCheckInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual void AttackHitCheck() = 0;
 
-	virtual void UseItem(class UItemDataAsset* Item) = 0;
-
-	virtual void TakeItem(class AItemBox* ItemBox) = 0;
-
-	
 
 };
