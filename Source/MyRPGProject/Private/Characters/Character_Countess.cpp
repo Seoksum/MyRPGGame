@@ -18,8 +18,6 @@
 
 ACharacter_Countess::ACharacter_Countess()
 {
-	//Stat = CreateDefaultSubobject<UMyStatComponent>(TEXT("STAT"));
-
 	LeftSword = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("LeftSword"));
 
 	TotalAttackIndex = 2;
@@ -189,14 +187,13 @@ void ACharacter_Countess::PressClimbingUp()
 	if (!bIsOnWall && bIsClimbingComplete)
 	{
 		AnimInstance->PlayClimbingComplete();
-		UE_LOG(LogTemp, Log, TEXT("Countess Climbing "));
 	}
 }
 
 void ACharacter_Countess::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
-	
+
 }
 
 

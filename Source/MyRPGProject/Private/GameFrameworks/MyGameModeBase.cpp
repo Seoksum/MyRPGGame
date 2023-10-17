@@ -65,7 +65,7 @@ AMyGameModeBase::AMyGameModeBase()
 	}
 
 	bUseSeamlessTravel = true;
-	
+
 }
 
 void AMyGameModeBase::PawnKilled(class APawn* PawnKilled)
@@ -95,13 +95,3 @@ void AMyGameModeBase::EndGame(bool bIsPlayerWinner)
 		Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
 	}
 }
-
-//for (AController* Controller : TActorRange<AController>(GetWorld()))
-//{
-//	bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;
-//	Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
-//}
-
-// bIsWinner가 true인 경우
-// AI 컨트롤러이고 && AI가 이겼을 때
-// 플레이어 컨트롤러이고 && 플레이어가 이겼을 때

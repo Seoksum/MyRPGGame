@@ -6,8 +6,6 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
-//#include "Kismet/KismetSystemLibrary.h"
-//#include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "TimerManager.h"
@@ -54,9 +52,7 @@ ACharacter_Parent::ACharacter_Parent()
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
 	GetCapsuleComponent()->BodyInstance.SetCollisionProfileName(FName("PlayerCharacter"));
-	//GetCapsuleComponent()->SetCollisionProfileName(FName("MyCharacter"));
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
-
 
 
 
@@ -94,13 +90,12 @@ void ACharacter_Parent::BeginPlay()
 
 	DefaultFOV = Camera->FieldOfView;
 
+	Stat->SetLevelStat(Level);
 }
 
 void ACharacter_Parent::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	Stat->SetLevelStat(Level);
 
 	HpBar->InitWidget();
 	UHPWidget* HpWidget = Cast<UHPWidget>(HpBar->GetUserWidgetObject());
@@ -134,12 +129,6 @@ void ACharacter_Parent::Tick(float DeltaTime)
 		float NewFOV = FMath::FInterpTo(Camera->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 		Camera->SetFieldOfView(NewFOV);
 	}
-
-	//if (bIsClimbingUp && bIsOnWall)
-	//{
-	//	SetActorLocation(GetActorLocation() + GetActorUpVector() * 1.1f);
-	//}
-
 }
 
 // Called to bind functionality to input
@@ -314,13 +303,13 @@ void ACharacter_Parent::AttackHitCheck() // 기본 공격
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);
 
-		const float AttackRange = 40.f;
+		const float AttackRange = Stat->GetTotalStat().AttackRange;
 
 		const FVector TraceStart = GetActorLocation();
 		const FVector TraceEnd = TraceStart + (GetActorForwardVector() * AttackRange); // 150.0f
 		FCollisionShape SweepShape = FCollisionShape::MakeSphere(100.0f);
 
-		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape,Params);
+		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape, Params);
 		if (bResult)
 		{
 			for (FHitResult& Hit : TraceHits)
@@ -336,7 +325,7 @@ void ACharacter_Parent::Attack()
 {
 	if (IsAttacking)
 		return;
-	
+
 	if (CurrentWeaponIndex == EWeapon::Sword)
 	{
 		if (SwordAsset) { SwordAsset->WeaponAttack(this); }
@@ -420,14 +409,14 @@ void ACharacter_Parent::EndAttack_R()
 	--Remaining_SkillR;
 }
 
-
-
 float ACharacter_Parent::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Stat->OnAttacked(DamageAmount);
+	UE_LOG(LogTemp, Log, TEXT("Player Take Damage"));
 	return DamageAmount;
 }
+
 
 // 인벤토리
 void ACharacter_Parent::Interact()
@@ -527,7 +516,6 @@ void ACharacter_Parent::SelectInventory()
 			bOnInventoryHUDMode = true;
 		}
 	}
-
 }
 
 void ACharacter_Parent::PressClimbingUp()
@@ -541,7 +529,7 @@ void ACharacter_Parent::PressClimbingUp()
 	FVector End = Start + GetActorForwardVector() * 150.f;
 
 	float CapsuleHeight = (GetCapsuleComponent()->GetScaledCapsuleHalfHeight()) * 2.f; // 156.f
-	
+
 	float diff = 150.f;
 	Start.Z += CapsuleHeight + diff;
 	End.Z += CapsuleHeight + diff;
@@ -628,9 +616,7 @@ void ACharacter_Parent::TakeItem(class AItemBox* ItemBox)
 		UWeaponItemDataAsset* WeaponItemData = Cast<UWeaponItemDataAsset>(ItemData);
 		CurrentWeaponItemAsset = WeaponItemData;
 	}
-
 }
-
 
 void ACharacter_Parent::IncreaseExp(int32 Exp)
 {

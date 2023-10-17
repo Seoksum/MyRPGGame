@@ -42,7 +42,7 @@ protected:
 
 
 	UFUNCTION()
-	void AttackCheck(int32 damage, float TraceDistance);
+		void AttackCheck(int32 damage, float TraceDistance);
 
 	virtual void PressClimbingUp() override;
 
@@ -50,25 +50,29 @@ protected:
 private:
 
 	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 
 private:
 
 	UPROPERTY(VisibleAnywhere)
-	class UAnimInstance_Countess* AnimInstance;
+		class UAnimInstance_Countess* AnimInstance;
+
+	UPROPERTY(VisibleAnywhere)
+		int32 TotalAttackIndex;
 
 	UPROPERTY(VisibleAnywhere)
 	int32 TotalAttackIndex;
 
 	UPROPERTY()
-	int32 AttackIndex = 0;
+		int32 AttackIndex = 0;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USkeletalMeshComponent* LeftSword;
 
 
+	class USkeletalMeshComponent* LeftSword;
 
 
 };

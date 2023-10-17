@@ -8,7 +8,7 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameData/CharacterEnum.h"
-#include "Interface/EnemyAIInterface.h"
+#include "Interface/AIEnemyInterface.h"
 
 
 const FName AAIController_Enemy::HomePosKey(TEXT("HomePos"));
@@ -54,7 +54,7 @@ void AAIController_Enemy::OnUnPossess()
 
 bool AAIController_Enemy::IsBossAIDead() const
 {
-	IEnemyAIInterface* BossEnemy = Cast<IEnemyAIInterface>(GetPawn());
+	IAIEnemyInterface* BossEnemy = Cast<IAIEnemyInterface>(GetPawn());
 	if (BossEnemy)
 	{
 		return BossEnemy->IsBossEnemyDead();
@@ -62,5 +62,4 @@ bool AAIController_Enemy::IsBossAIDead() const
 
 	return false;
 }
-
 

@@ -49,9 +49,6 @@ public:
 	void PlayClimbingComplete();
 	float PlayClimbing();
 
-	
-
-
 	// AnimNotify
 private:
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Enemies/Enemy.h"
 #include "Interface/EnemyAIInterface.h"
+#include "Interface/AIEnemyInterface.h"
 #include "Enemy_Boss.generated.h"
 
 /**
@@ -14,10 +15,10 @@
 
 
 UCLASS()
-class MYRPGPROJECT_API AEnemy_Boss : public AEnemy, public IEnemyAIInterface
+class MYRPGPROJECT_API AEnemy_Boss : public AEnemy, public IAIEnemyInterface
 {
 	GENERATED_BODY()
-	
+
 
 public:
 
@@ -53,7 +54,7 @@ public:
 	bool JumpAttacking;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-		TSubclassOf<UCameraShakeBase> AttackedCamShake;
+	TSubclassOf<UCameraShakeBase> AttackedCamShake;
 
 	UPROPERTY(EditAnywhere, Category = "Mesh")
 	class USkeletalMeshComponent* WeaponLeft;

@@ -38,11 +38,12 @@ protected:
 	void AttackR();
 
 
-
 	UFUNCTION()
 		void SkillAttackCheck(int32 damage, float TraceDistance, class UParticleSystem* Particle);
 
 	virtual void PressClimbingUp() override;
+	void ReleaseClimbing();
+	FTimerHandle ClimbingTimerHandle;
 
 	void ReleaseClimbing();
 

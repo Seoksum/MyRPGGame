@@ -53,8 +53,6 @@ UAnimInstance_Greystone::UAnimInstance_Greystone()
 		BowAttackMontage = Montage_Bow.Object;
 	}
 
-
-
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> Montage_Climbing(TEXT("AnimMontage'/Game/Blueprints/MainCharacter/Greystone/Montages/Climbing.Climbing'"));
 	if (Montage_Climbing.Succeeded())
 	{
@@ -140,8 +138,6 @@ float UAnimInstance_Greystone::PlayClimbing()
 	return Montage_Play(ClimbingMontage, 1.f);
 }
 
-
-
 void UAnimInstance_Greystone::JumpToSection_Default(int32 SectionIndex)
 {
 	FName Name = GetAttackMontageName(SectionIndex);
@@ -190,4 +186,5 @@ void UAnimInstance_Greystone::AnimNotify_CamShakeHit()
 {
 	OnCameraShake.Broadcast();
 }
+
 

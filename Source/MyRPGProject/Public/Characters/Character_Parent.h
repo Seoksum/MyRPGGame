@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interface/HealthInterface.h"
-#include "Interface/AnimationAttackInterface.h"
+#include "Interface/AttackHitCheckInterface.h"
 #include "Interface/CharacterItemInterface.h"
 #include "Interface/InGameWidgetInterface.h"
 #include "Interface/PlayerStateInterface.h"
@@ -14,7 +14,7 @@
 
 
 UCLASS()
-class MYRPGPROJECT_API ACharacter_Parent : public ACharacter, public IHealthInterface, public IAnimationAttackInterface, public ICharacterItemInterface, public IInGameWidgetInterface, public IPlayerStateInterface
+class MYRPGPROJECT_API ACharacter_Parent : public ACharacter, public IHealthInterface, public IAttackHitCheckInterface, public ICharacterItemInterface, public IInGameWidgetInterface, public IPlayerStateInterface
 {
 	GENERATED_BODY()
 
@@ -110,7 +110,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool IsDoubleJumping;
 
-
 	UPROPERTY(EditDefaultsOnly, Category ="State")
 	int32 CurrentWeaponIndex;
 
@@ -126,9 +125,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool CanPressClimbingUp = true;
 
-
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool IsDeath;
+
 
 //Player State Interface 
 public:
@@ -177,9 +176,6 @@ protected:
 
 	UPROPERTY()
 	float Mana;
-
-	UPROPERTY()
-	class AWeapon* CurrentWeapon;
 
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HpBar;

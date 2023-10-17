@@ -13,7 +13,6 @@
 #include "Components/WidgetComponent.h"
 #include "UI/HPWidget.h"
 #include "Camera/CameraComponent.h"
-#include "Enemies/Enemy.h"
 #include "Items/WeaponItemDataAsset_Sword.h"
 #include "GameData/GameCollision.h"
 #include "GameData/CharacterEnum.h"
@@ -32,7 +31,6 @@ void ACharacter_Greystone::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction(TEXT("Attack_Q"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackQ);
 	PlayerInputComponent->BindAction(TEXT("Attack_E"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackE);
 	PlayerInputComponent->BindAction(TEXT("Attack_R"), EInputEvent::IE_Pressed, this, &ACharacter_Greystone::AttackR);
-
 }
 
 void ACharacter_Greystone::Tick(float DeltaTime)
@@ -46,12 +44,14 @@ void ACharacter_Greystone::Tick(float DeltaTime)
 		SetActorLocation(GetActorLocation() + GetActorUpVector() * 10.f);
 	}
 
+	// 등반 중일 때
 	if (bIsClimbingUp && bIsOnWall)
 	{
 		FVector Loc = GetActorLocation();
 		SetActorLocation(FVector(Loc.X, Loc.Y, Loc.Z + 1.1f));
 	}
 
+	// R 스킬 공격 중
 	if (AttackMoving)
 	{
 		FVector NewLocation1 = GetActorLocation() + GetActorForwardVector() * 7.f;
@@ -160,12 +160,14 @@ void ACharacter_Greystone::SkillAttackCheck(int32 damage, float TraceDistance, c
 	if (CurrentWeaponIndex == EWeapon::Sword)
 	{
 		TArray<FHitResult> TraceHits;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
 
 		const FVector TraceStart = GetActorLocation();
 		const FVector TraceEnd = TraceStart + (GetActorForwardVector() * TraceDistance);
 		FCollisionShape SweepShape = FCollisionShape::MakeSphere(100.0f);
 
-		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape);
+		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape, Params);
 		if (bResult)
 		{
 			for (FHitResult& Hit : TraceHits)
@@ -194,13 +196,13 @@ void ACharacter_Greystone::PressClimbingUp()
 			GetWorld()->GetTimerManager().SetTimer(ClimbingTimerHandle, this, &ACharacter_Greystone::ReleaseClimbing, Duration - 0.6f, true);
 		}
 	}
-	
+
 	else
 	{
 		if (bIsClimbingComplete)
 		{
 			AnimInstance->PlayClimbingComplete();
-			
+
 		}
 	}
 }

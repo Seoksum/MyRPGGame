@@ -37,7 +37,7 @@ public:
 		return FPrimaryAssetId("ItemDataAsset", GetFName());
 	}
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		FCharacterStat WeaponStat;
+	FCharacterStat WeaponStat;
 
 	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
 		TSoftObjectPtr<USkeletalMesh> WeaponMesh;
@@ -48,7 +48,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
 		EWeaponType WeaponType;
 
+	FCharacterStat WeaponStat;
 
+	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
+	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
+
+	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
+	TSoftObjectPtr<USkeletalMeshComponent> WeaponMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
+	EWeaponType WeaponType;
 
 protected:
 

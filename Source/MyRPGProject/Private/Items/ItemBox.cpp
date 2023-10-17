@@ -3,18 +3,16 @@
 
 #include "Items/ItemBox.h"
 #include "Components/BoxComponent.h"
-//#include "GameData/GameCollision.h"
+#include "GameData/GameCollision.h"
 #include "Interface/CharacterItemInterface.h"
 #include "Engine/AssetManager.h"
 #include "Items/ItemDataAsset.h"
-
-
 
 // Sets default values
 AItemBox::AItemBox()
 {
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	//CollisionComp->SetCollisionProfileName(COLLECTIBLE);
+	CollisionComp->SetCollisionProfileName(COLLECTIBLE);
 	CollisionComp->SetBoxExtent(FVector());
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AItemBox::OnBeginOverlap);
 	RootComponent = CollisionComp;
@@ -41,11 +39,13 @@ void AItemBox::BeginPlay()
 		{
 			BoxIndex = FMath::RandRange(0, Assets.Num() - 1 - WeaponCount);
 		}
+
 		FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[BoxIndex]));
 		if (AssetPtr.IsPending())
 		{
 			AssetPtr.LoadSynchronous();
 		}
+
 		Item = Cast<UItemDataAsset>(AssetPtr.Get());
 		MeshComp->SetStaticMesh(Item->GetLazyLoadedMesh());
 	}
@@ -54,7 +54,6 @@ void AItemBox::BeginPlay()
 void AItemBox::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
 
 }
 
@@ -71,16 +70,5 @@ void AItemBox::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		Player->TakeItem(this);
 	}
-
-}
-
-void AItemBox::OnPickedUp()
-{
-	Destroy();
-
-	//MeshComp->SetVisibility(false);
-	//MeshComp->SetSimulatePhysics(false);
-	//MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 

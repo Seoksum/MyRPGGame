@@ -36,8 +36,6 @@ public:
 
 	virtual void Attack();
 
-
-
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")

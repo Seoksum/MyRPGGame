@@ -13,13 +13,14 @@ AArrow::AArrow()
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/Weapon/Archer/SM_Sparrow_Arrow.SM_Sparrow_Arrow'"));
 	if (SM.Succeeded())
+	{
 		MeshComp->SetStaticMesh(SM.Object);
+	}
 	MeshComp->SetRelativeRotation(FRotator(90.f, 0.f, 0.f));
 	MeshComp->SetCollisionProfileName(FName("CharacterMesh"));
 
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	CollisionComp->SetBoxExtent(FVector(60.f, 40.f, 20.f));
-	//CollisionComp->SetCollisionObjectType(ECollisionChannel::ECC_EngineTraceChannel4);
 	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionComp->SetCollisionProfileName(TEXT("Arrow"));
 	CollisionComp->SetSimulatePhysics(false);

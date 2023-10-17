@@ -46,7 +46,6 @@ void UWeaponItemDataAsset_Gun::Fire()
 
 		bool bHit = Player->GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ATTACK, QueryParams);
 
-		
 		if (bHit)
 		{
 			AEnemy* Enemy = Cast<AEnemy>(Hit.GetActor());
@@ -130,3 +129,4 @@ void UWeaponItemDataAsset_Gun::PlayImpactEffects(FVector ImpactPoint, UParticleS
 		UGameplayStatics::SpawnEmitterAtLocation(Player->GetWorld(), Particle, ImpactPoint, ShotDirection.Rotation());
 	}
 }
+

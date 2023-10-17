@@ -37,16 +37,13 @@ protected:
 public:
 
 	UPROPERTY(EditAnywhere, Category = "Item")
-		class UItemDataAsset* Item;
-
-	void OnPickedUp();
+	class UItemDataAsset* Item;
 
 	UPROPERTY(EditAnywhere, Category = "Item")
-		int32 WeaponCount;
+	int32 WeaponCount;
 
 	UPROPERTY(EditAnywhere, Category = "Item")
-		int32 BoxIndex;
-
+	int32 BoxIndex;
 
 
 };
