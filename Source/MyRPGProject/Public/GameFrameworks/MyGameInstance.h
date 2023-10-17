@@ -42,10 +42,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	int32 WeaponCount;
 
+	// Weapon Index와 Socket 이름 저장하는 Map
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TMap<int32, FName> WeaponArray;
-
-
 
 
 };

@@ -60,7 +60,6 @@ private:
 	UFUNCTION()
 	void AnimNotify_AttackHit_R();
 
-
 	// Player State
 public:
 
@@ -86,10 +85,10 @@ public:
 	bool IsOnWall;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
-	bool IsClimbingUp;
+		bool IsClimbingUp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
-	bool IsDeath;
+		bool IsDeath;
 
 
 	// Anim Montage
@@ -118,7 +117,7 @@ protected:
 
 
 private:
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	float TraceDistance;
 

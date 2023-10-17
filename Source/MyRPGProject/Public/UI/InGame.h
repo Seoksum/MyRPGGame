@@ -33,10 +33,8 @@ public:
 	void SetLevel(int32 PlayerLevel);
 	
 
-	
 	void UpdateHp(float Hp);
 
-	
 	void UpdateMana(float Mana, float MaxMana);
 
 	void UpdateAttack(float WeaponAttack);

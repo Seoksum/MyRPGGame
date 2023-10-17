@@ -15,13 +15,6 @@ class MYRPGPROJECT_API UCharacterStatWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-protected:
-
-	virtual void NativeOnInitialized();
-
-public:
-
-
 public:
 
 	TWeakObjectPtr<class UMyStatComponent> CurrentStatComp;
