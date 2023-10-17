@@ -34,14 +34,14 @@ public:
 		return FPrimaryAssetId("ItemDataAsset", GetFName());
 	}
 
-	UPROPERTY()
-	TWeakObjectPtr<class UInventoryComponent> OwingInventory;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
 	EItemType Type;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> Mesh;
+
+	UPROPERTY()
+	TWeakObjectPtr<class UInventoryComponent> OwingInventory;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
 	class UTexture2D* Thumbnail;

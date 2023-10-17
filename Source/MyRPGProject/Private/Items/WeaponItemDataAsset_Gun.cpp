@@ -64,6 +64,11 @@ void UWeaponItemDataAsset_Gun::Fire()
 
 		PlayFireEffects(TraceEndPoint);
 		LastFiredTime = Player->GetWorld()->TimeSeconds;
+
+		if (FireSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(Player->GetWorld(), FireSound, Player->GetActorLocation());
+		}
 	}
 }
 
@@ -80,8 +85,8 @@ void UWeaponItemDataAsset_Gun::StartFire()
 {
 	if (WeaponMeshComponent != nullptr)
 	{
-		float FirstDelay = FMath::Max(LastFiredTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.f);
-		Player->GetWorld()->GetTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &UWeaponItemDataAsset_Gun::Fire, TimeBetweenShots, true, 0.f);
+		float FirstDelay = FMath::Max(LastFiredTime + TimeBetweenShots - Player->GetWorld()->TimeSeconds, 0.f);
+		Player->GetWorld()->GetTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &UWeaponItemDataAsset_Gun::Fire, TimeBetweenShots, true, FirstDelay);
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, Player->GetActorLocation());
 	}
 }
@@ -119,6 +124,10 @@ void UWeaponItemDataAsset_Gun::PlayImpactEffects(FVector ImpactPoint, UParticleS
 {
 	if (Particle)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(Player->GetWorld(), Particle, ImpactPoint);
+		FVector MuzzleLocation = WeaponMeshComponent->GetSocketLocation(MuzzleSocketName);
+		FVector ShotDirection = ImpactPoint - MuzzleLocation;
+		ShotDirection.Normalize();
+		UGameplayStatics::SpawnEmitterAtLocation(Player->GetWorld(), Particle, ImpactPoint, ShotDirection.Rotation());
 	}
 }
+

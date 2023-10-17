@@ -45,11 +45,6 @@ public:
 	bool ApplyHUD(UUserWidget* WidgetToApply, bool bShowMouseCursor, bool EnableClickEvents); // screen에 hud를 적용한 후 성공여부 반환
 
 
-	void AddCrossWidget();
-	void RemoveCrossWidget();
-
-	
-
 
 public:
 
@@ -74,12 +69,6 @@ public:
 	UUserWidget* RestartWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
-	TSubclassOf<UUserWidget> CrosshairHUDClass;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
-	UUserWidget* CrosshairWidget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	TSubclassOf<UUserWidget> WinnerHUDClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
@@ -90,9 +79,6 @@ public:
 	
 
 private:
-
-	UPROPERTY(VisibleAnywhere, Category = "Game")
-	class UMyGameInstance* MyGameInstanceRef;
 
 	UPROPERTY(VisibleAnywhere, Category = "Game")
 	class UMySaveGame* MySaveGame;

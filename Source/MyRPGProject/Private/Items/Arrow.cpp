@@ -5,8 +5,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Enemies/Enemy.h"
-
 
 // Sets default values
 AArrow::AArrow()
@@ -14,13 +12,14 @@ AArrow::AArrow()
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/Weapon/Archer/SM_Sparrow_Arrow.SM_Sparrow_Arrow'"));
 	if (SM.Succeeded())
+	{
 		MeshComp->SetStaticMesh(SM.Object);
+	}
 	MeshComp->SetRelativeRotation(FRotator(90.f, 0.f, 0.f));
 	MeshComp->SetCollisionProfileName(FName("CharacterMesh"));
 
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	CollisionComp->SetBoxExtent(FVector(60.f, 40.f, 20.f));
-	//CollisionComp->SetCollisionObjectType(ECollisionChannel::ECC_EngineTraceChannel4);
 	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionComp->SetCollisionProfileName(TEXT("Arrow"));
 	CollisionComp->SetSimulatePhysics(false);
@@ -42,9 +41,6 @@ AArrow::AArrow()
 	MuzzleSocketName = "MuzzleSocket";
 	InitialLifeSpan = 3.f;
 	BaseDamage = 30.f;
-
-	SetReplicates(true);
-	SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -61,19 +57,15 @@ void AArrow::BeginPlay()
 void AArrow::OnBeginOverlap(UPrimitiveComponent* OverlappedcComp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AEnemy* Enemy = Cast<AEnemy>(OtherActor);
 	FDamageEvent DamageEvent;
-	FTransform EffectTrasform(FRotator::ZeroRotator, OtherActor->GetActorLocation());
 
-	if (Enemy)
+	OtherActor->TakeDamage(BaseDamage, DamageEvent, OtherActor->GetInstigatorController(), this);
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (SkillEffect)
 	{
-		Enemy->TakeDamage(BaseDamage, DamageEvent, Enemy->GetController(), this);
-		CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (SkillEffect)
-		{
-			UGameplayStatics::SpawnEmitterAttached(SkillEffect, MeshComp);
-		}
+		UGameplayStatics::SpawnEmitterAttached(SkillEffect, MeshComp);
 	}
 }
 

@@ -39,7 +39,7 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 	{
 		//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, RandomLocation);
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(AAIController_Enemy::PatrolPosKey, RandomLocation.Location);
-		
+
 		return EBTNodeResult::Succeeded;
 	}
 

@@ -39,8 +39,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Item")
 	class UItemDataAsset* Item;
 
-	void OnPickedUp();
-
 	UPROPERTY(EditAnywhere, Category = "Item")
 	int32 WeaponCount;
 

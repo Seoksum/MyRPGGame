@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Characters/Character_Parent.h"
-#include "Interface/SkillAttackInterface.h"
 #include "Character_Countess.generated.h"
 
 /**
@@ -14,7 +13,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
 
 UCLASS()
-class MYRPGPROJECT_API ACharacter_Countess : public ACharacter_Parent, public ISkillAttackInterface
+class MYRPGPROJECT_API ACharacter_Countess : public ACharacter_Parent
 {
 	GENERATED_BODY()
 	
@@ -29,19 +28,21 @@ public:
 
 	virtual void AddInGameWidget(class UInGame* InGame) override;
 
+	virtual void SetupPlayerView(FVector Location, FVector SocketOffset) override;
+
 protected:
 
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 
 	virtual void Attack() override;
-	virtual void AttackQ_Implementation() override;
-	virtual void AttackE_Implementation() override;
-	virtual void AttackR_Implementation() override;
-	
+	void AttackQ();
+	void AttackE();
+	void AttackR();
+
 
 	UFUNCTION()
-	void AttackCheck(int32 damage, float TraceDistance);
+		void AttackCheck(int32 damage, float TraceDistance);
 
 	virtual void PressClimbingUp() override;
 
@@ -49,21 +50,23 @@ protected:
 private:
 
 	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 
 private:
 
 	UPROPERTY(VisibleAnywhere)
-	class UAnimInstance_Countess* AnimInstance;
+		class UAnimInstance_Countess* AnimInstance;
+
+	UPROPERTY(VisibleAnywhere)
+		int32 TotalAttackIndex;
 
 	UPROPERTY()
-	int32 AttackIndex = 0;
+		int32 AttackIndex = 0;
 
-	FOnAttackEnd OnAttackEnd;
-
-	/*UPROPERTY(EditAnywhere)
-	TSubclassOf<class AWeapon_Gun> GunClass_L;*/
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		class USkeletalMeshComponent* LeftSword;
 
 
 };

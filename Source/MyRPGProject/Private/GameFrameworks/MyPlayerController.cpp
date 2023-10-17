@@ -3,13 +3,9 @@
 
 #include "GameFrameworks/MyPlayerController.h"
 #include "UI/InGame.h"
-//#include "UI/WinnerWidget.h"
-//#include "UI/InventoryWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/Image.h"
 #include "GameFrameworks/MySaveGame.h"
-
 
 
 AMyPlayerController::AMyPlayerController()
@@ -31,12 +27,6 @@ AMyPlayerController::AMyPlayerController()
 	if (Restart_Class.Succeeded())
 	{
 		RestartHUDClass = Restart_Class.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<UUserWidget> Crosshair_Class(TEXT("WidgetBlueprint'/Game/UI/WBP_Crosshair.WBP_Crosshair_C'"));
-	if (Crosshair_Class.Succeeded())
-	{
-		CrosshairHUDClass = Crosshair_Class.Class;
 	}
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> Winner_Class(TEXT("WidgetBlueprint'/Game/UI/WBP_Win.WBP_Win_C'"));
@@ -91,7 +81,6 @@ void AMyPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 
 	if (bIsWinner)
 	{
-		//ApplyHUD(WinnerWidget, true, true);
 		ChangeHUD(HS_Win);
 	}
 	else
@@ -173,18 +162,4 @@ bool AMyPlayerController::ApplyHUD(UUserWidget* WidgetToApply, bool IsShowMouseC
 		return true;
 	}
 	return false;
-}
-
-
-void AMyPlayerController::AddCrossWidget()
-{
-	CrosshairWidget = CreateWidget(GetWorld(), CrosshairHUDClass);
-	if (CrosshairWidget)
-		CrosshairWidget->AddToViewport();
-}
-
-void AMyPlayerController::RemoveCrossWidget()
-{
-	if (CrosshairWidget)
-		CrosshairWidget->RemoveFromViewport();
 }

@@ -59,7 +59,6 @@ protected:
 	void EndAttack_R();
 
 	virtual void PressClimbingUp(); // 1번 키를 눌러 캐릭터 벽 타기
-	void ReleaseClimbingUp();
 
 	virtual void OnDeath_Implementation() override;
 
@@ -106,9 +105,12 @@ public:
 	int32 DoubleJumpCounter;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
+	bool OnClickJumpButton;
+
+	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool IsDoubleJumping;
 
-	UPROPERTY(EditDefaultsOnly, Category ="State")
+	UPROPERTY(EditDefaultsOnly, Category = "State")
 	int32 CurrentWeaponIndex;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
@@ -121,7 +123,11 @@ public:
 	bool bIsClimbingComplete = false;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
+	bool CanPressClimbingUp = true;
+
+	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool IsDeath;
+
 
 //Player State Interface 
 public:
@@ -130,6 +136,8 @@ public:
 	virtual class UInventoryComponent* GetInventoryComponent() override;
 
 	virtual bool GetIsDoubleJumping() override;
+	virtual bool GetIsJumping() override;
+	virtual bool GetIsCrouch() override;
 	virtual int32 GetCurrentWeaponIndex() override;
 	virtual bool GetIsOnWall() override;
 	virtual bool GetIsClibmingUp() override;
@@ -162,8 +170,6 @@ protected:
 	FTimerHandle QSkillHandle;
 	FTimerHandle ESkillHandle;
 	FTimerHandle RSkillHandle;
-
-	FTimerHandle ClimbingHandle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 Level;
@@ -208,12 +214,10 @@ protected:
 	bool AddItemToInventory(class UItemDataAsset* Item);
 
 	virtual void TakeItem(class AItemBox* ItemBox) override;
-	//virtual void UsePotion(class UItemDataAsset* InItemData);
-	//virtual void EquipWeapon(class UItemDataAsset* InItemData);
 
 	virtual void UseItem(class UItemDataAsset* Item) override;
 
-	void SetupPlayerView(FVector Location, FVector SocketOffset);
+	virtual void SetupPlayerView(FVector Location, FVector SocketOffset);
 
 	UPROPERTY(VisibleAnywhere)
 	class AItemBox* CurrentItemBox;

@@ -46,13 +46,8 @@ public:
 	void UseHpPotion(float Amount);
 	void UseManaPotion(float Amount);
 
-	void SetTotalStat(const FCharacterStat& TotalStat);
-
 
 public:
-
-	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
-		class UMyGameInstance* MyGameInstance;
 
 	FOnHpChanged OnHpChanged;
 
@@ -87,28 +82,28 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	UPROPERTY(VisibleInstanceOnly, Category = "Stat")
 	float MaxHp;
 
-	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	UPROPERTY(VisibleInstanceOnly, Category = "Stat")
 	float MaxMana;
 
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat")
+	UPROPERTY(Transient, EditAnywhere, Category = "Stat")
 	float CurrentHp;
 
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat")
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
 	float CurrentMana;
 
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat")
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
 	float CurrentExp;
 
-	UPROPERTY(Transient, VisibleAnywhere, Category = "Stat")
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
 	float CurrentLevel;
 
-	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
 	FCharacterStat BaseStat;
 
-	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
 	FCharacterStat WeaponStat;
 
 

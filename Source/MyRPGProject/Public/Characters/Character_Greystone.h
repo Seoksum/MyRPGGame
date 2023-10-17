@@ -41,14 +41,16 @@ protected:
 	void SkillAttackCheck(int32 damage, float TraceDistance,class UParticleSystem* Particle);
 
 	virtual void PressClimbingUp() override;
+	void ReleaseClimbing();
+	FTimerHandle ClimbingTimerHandle;
 
 	virtual void CameraShakeCheck() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-		class UParticleSystem* AttackQ_Effect;
+	class UParticleSystem* AttackQ_Effect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-		class UParticleSystem* AttackE_Effect;
+	class UParticleSystem* AttackE_Effect;
 
 
 private:

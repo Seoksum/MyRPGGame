@@ -19,7 +19,7 @@ void UMyGameInstance::Init()
 	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeapon"), true);
 	if (enumPtr != nullptr)
 	{
-		for (int32 i = 1; i < WeaponCount; i++)
+		for (int32 i = 1; i < WeaponCount; i++) // 0¹øÀº None
 		{
 			const FName WeaponName = *FString::Printf(TEXT("%sSocket"), *enumPtr->GetNameByIndex(i).ToString());
 			WeaponArray.Add(i, WeaponName);

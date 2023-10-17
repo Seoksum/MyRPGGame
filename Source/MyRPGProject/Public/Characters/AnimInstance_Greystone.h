@@ -47,12 +47,11 @@ public:
 	FName GetAttackMontageName(int32 SectionIndex);
 
 	void PlayClimbingComplete();
+	float PlayClimbing();
 
 
 	// AnimNotify
 private:
-	UFUNCTION()
-	void AnimNotify_AttackHit();
 
 	UFUNCTION()
 	void AnimNotify_AttackHit_Q();
@@ -80,7 +79,10 @@ public:
 	bool IsFalling;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
-	bool IsDoubleJump;
+	bool IsDoubleJumping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
+	bool IsJumping;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
 	bool IsCrouched;
@@ -121,20 +123,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ClimbingCompleteMontage;
 
-// Particle System
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+		UAnimMontage* ClimbingMontage;
+
+
+	// Particle System
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-	class UParticleSystem* AttackQ_Effect;
+		class UParticleSystem* AttackQ_Effect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-	class UParticleSystem* AttackE_Effect;
+		class UParticleSystem* AttackE_Effect;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
-	class UMyStatComponent* Stat;
+		class UMyStatComponent* Stat;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
-	float TraceDistance;
+		float TraceDistance;
 
 
 // Delegate

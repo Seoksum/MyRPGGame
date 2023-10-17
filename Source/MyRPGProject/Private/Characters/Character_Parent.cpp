@@ -6,8 +6,6 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
-//#include "Kismet/KismetSystemLibrary.h"
-//#include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "TimerManager.h"
@@ -54,10 +52,8 @@ ACharacter_Parent::ACharacter_Parent()
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
 	GetCapsuleComponent()->BodyInstance.SetCollisionProfileName(FName("PlayerCharacter"));
-	//GetCapsuleComponent()->SetCollisionProfileName(FName("MyCharacter"));
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 
-	
 
 
 	Stat = CreateDefaultSubobject<UMyStatComponent>(TEXT("STAT"));
@@ -94,13 +90,12 @@ void ACharacter_Parent::BeginPlay()
 
 	DefaultFOV = Camera->FieldOfView;
 	
+	Stat->SetLevelStat(Level);
 }
 
 void ACharacter_Parent::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	Stat->SetLevelStat(Level);
 
 	HpBar->InitWidget();
 	UHPWidget* HpWidget = Cast<UHPWidget>(HpBar->GetUserWidgetObject());
@@ -133,12 +128,6 @@ void ACharacter_Parent::Tick(float DeltaTime)
 		float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
 		float NewFOV = FMath::FInterpTo(Camera->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 		Camera->SetFieldOfView(NewFOV);
-	}
-
-	if (bIsClimbingUp && bIsOnWall)
-	{
-		FVector Loc = GetActorLocation();
-		SetActorLocation(FVector(Loc.X, Loc.Y, Loc.Z + 1.5f));
 	}
 }
 
@@ -182,13 +171,13 @@ void ACharacter_Parent::OnDeath_Implementation()
 	if (IsDeath)
 		return;
 	IsDeath = true;
-	
+
 	IMyGameModeInterface* MyGameMode = Cast<IMyGameModeInterface>(GetWorld()->GetAuthGameMode());
 	if (MyGameMode)
 	{
 		MyGameMode->PawnKilled(this);
 	}
-	
+
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	DisableInput(PlayerController);
 	DetachFromControllerPendingDestroy();
@@ -212,6 +201,8 @@ void ACharacter_Parent::LeftRight(float Value)
 }
 void ACharacter_Parent::Yaw(float Value)
 {
+	if (Value == 0.f || bIsOnWall)
+		return;
 	AddControllerYawInput(Value);
 }
 
@@ -241,8 +232,12 @@ void ACharacter_Parent::StopSprinting()
 
 void ACharacter_Parent::DoubleJump()
 {
+	if (IsDoubleJumping)
+		return;
+
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	bIsOnWall = false;
+	OnClickJumpButton = true;
 
 	if (DoubleJumpCounter == 0)
 	{
@@ -264,6 +259,9 @@ void ACharacter_Parent::DoubleJump()
 void ACharacter_Parent::Landed(const FHitResult& Hit)
 {
 	DoubleJumpCounter = 0;
+	bIsClimbingComplete = false;
+	IsDoubleJumping = false;
+	OnClickJumpButton = false;
 }
 
 void ACharacter_Parent::CameraZoom(const float Value)
@@ -288,11 +286,13 @@ void ACharacter_Parent::EndZoom()
 void ACharacter_Parent::BeginCrouch()
 {
 	Crouch();
+	bIsCrouched = true;
 }
 
 void ACharacter_Parent::EndCrouch()
 {
 	UnCrouch();
+	bIsCrouched = false;
 }
 
 void ACharacter_Parent::AttackHitCheck() // 기본 공격
@@ -303,23 +303,19 @@ void ACharacter_Parent::AttackHitCheck() // 기본 공격
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);
 
-		const float AttackRange = 40.f;
+		const float AttackRange = Stat->GetTotalStat().AttackRange;
 
 		const FVector TraceStart = GetActorLocation();
 		const FVector TraceEnd = TraceStart + (GetActorForwardVector() * AttackRange); // 150.0f
 		FCollisionShape SweepShape = FCollisionShape::MakeSphere(100.0f);
 
-		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape);
+		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape, Params);
 		if (bResult)
 		{
 			for (FHitResult& Hit : TraceHits)
 			{
-				AEnemy* Enemy = Cast<AEnemy>(Hit.Actor);
-				if (Enemy && !Enemy->IsDeath)
-				{
-					FDamageEvent DamageEvent;
-					Enemy->TakeDamage(Stat->GetTotalStat().Attack, DamageEvent, GetController(), this);
-				}
+				FDamageEvent DamageEvent;
+				Hit.Actor->TakeDamage(Stat->GetTotalStat().Attack, DamageEvent, GetController(), this);
 			}
 		}
 	}
@@ -413,22 +409,22 @@ void ACharacter_Parent::EndAttack_R()
 	--Remaining_SkillR;
 }
 
-
-
 float ACharacter_Parent::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Stat->OnAttacked(DamageAmount);
+	UE_LOG(LogTemp, Log, TEXT("Player Take Damage"));
 	return DamageAmount;
 }
+
 
 // 인벤토리
 void ACharacter_Parent::Interact()
 {
 	if (CurrentInteractableItemAsset != nullptr)
 	{
-		CurrentItemBox->Destroy();
 		AddItemToInventory(CurrentInteractableItemAsset);
+		CurrentItemBox->Destroy();
 	}
 }
 
@@ -449,7 +445,7 @@ void ACharacter_Parent::UseItem(class UItemDataAsset* Item)
 	Item->Use(this);
 	if (Item->Type != EItemType::Weapon)
 	{
-		Inventory->RemoveItem(Item); 
+		Inventory->RemoveItem(Item);
 	}
 }
 
@@ -469,7 +465,7 @@ void ACharacter_Parent::SwitchWeaponItemData(int32 Index, class UWeaponItemDataA
 	SpringArm->TargetArmLength = 550.f;
 	CurrentWeaponItemAsset = WeaponItem;
 	Stat->SetWeaponStat(WeaponItem->WeaponStat);
-	
+
 	if (Index == EWeapon::Sword)
 	{
 		SwordAsset = Cast<UWeaponItemDataAsset_Sword>(CurrentWeaponItemAsset);
@@ -520,19 +516,19 @@ void ACharacter_Parent::SelectInventory()
 			bOnInventoryHUDMode = true;
 		}
 	}
-
 }
 
 void ACharacter_Parent::PressClimbingUp()
 {
 	if (bIsClimbingUp)
+	{
 		return;
+	}
 
-	FVector Start = GetCapsuleComponent()->GetRelativeLocation();
-	FVector End = GetCapsuleComponent()->GetRelativeLocation() + GetCapsuleComponent()->GetForwardVector() * 300.f;
+	FVector Start = GetActorLocation();
+	FVector End = Start + GetActorForwardVector() * 150.f;
 
-	float CapsuleHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-	float CapsuleHeight = CapsuleHalfHeight * 2.f;
+	float CapsuleHeight = (GetCapsuleComponent()->GetScaledCapsuleHalfHeight()) * 2.f; // 156.f
 
 	float diff = 150.f;
 	Start.Z += CapsuleHeight + diff;
@@ -541,8 +537,9 @@ void ACharacter_Parent::PressClimbingUp()
 	FHitResult OutHit;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
-	bool bResult = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECollisionChannel::ECC_GameTraceChannel6, QueryParams);
+	bool bResult = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, CLIMBING_WALL, QueryParams);
 
+	// Climbing 
 	if (bResult) // Climbing 
 	{
 		bIsOnWall = true;
@@ -550,6 +547,7 @@ void ACharacter_Parent::PressClimbingUp()
 		bIsClimbingUp = true;
 	}
 
+	// Complete
 	else
 	{
 		if (bIsOnWall) // Climbing 완료
@@ -558,17 +556,7 @@ void ACharacter_Parent::PressClimbingUp()
 			bIsOnWall = false;
 			bIsClimbingComplete = true;
 		}
-		else { return; }
 	}
-
-	GetWorld()->GetTimerManager().SetTimer(ClimbingHandle, this, &ACharacter_Parent::ReleaseClimbingUp, 1.5f, true);
-}
-
-void ACharacter_Parent::ReleaseClimbingUp()
-{
-	bIsClimbingUp = false;
-	GetWorld()->GetTimerManager().ClearTimer(ClimbingHandle);
-	bIsClimbingComplete = false;
 }
 
 void ACharacter_Parent::CameraShakeCheck()
@@ -628,20 +616,7 @@ void ACharacter_Parent::TakeItem(class AItemBox* ItemBox)
 		UWeaponItemDataAsset* WeaponItemData = Cast<UWeaponItemDataAsset>(ItemData);
 		CurrentWeaponItemAsset = WeaponItemData;
 	}
-
-	//switch (ItemData->Type)
-	//{
-	//case EItemType::Weapon:
-	//	EquipWeapon(ItemData);
-	//	break;
-	//case EItemType::Potion:
-	//	UsePotion(ItemData);
-	//	break;
-	//default:
-	//	break;
-	//}
 }
-
 
 void ACharacter_Parent::IncreaseExp(int32 Exp)
 {
@@ -654,7 +629,6 @@ void ACharacter_Parent::AddInGameWidget(class UInGame* InGame)
 	if (InGameWidget)
 	{
 		InGameWidget->BindStat(Stat);
-
 		Stat->OnAddWeaponAttack.AddUObject(InGame, &UInGame::UpdateAttack);
 		Stat->OnStatChanged.AddUObject(InGame, &UInGame::UpdatePlayerStat);
 	}
@@ -662,6 +636,8 @@ void ACharacter_Parent::AddInGameWidget(class UInGame* InGame)
 
 // AnimInstance
 bool ACharacter_Parent::GetIsDoubleJumping() { return IsDoubleJumping; }
+bool ACharacter_Parent::GetIsJumping() { return OnClickJumpButton; }
+bool ACharacter_Parent::GetIsCrouch() { return bIsCrouched; }
 int32 ACharacter_Parent::GetCurrentWeaponIndex() { return CurrentWeaponIndex; }
 bool ACharacter_Parent::GetIsOnWall() { return bIsOnWall; }
 bool ACharacter_Parent::GetIsClibmingUp() { return bIsClimbingUp; }

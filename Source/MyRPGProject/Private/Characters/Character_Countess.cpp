@@ -18,10 +18,10 @@
 
 ACharacter_Countess::ACharacter_Countess()
 {
-	//Stat = CreateDefaultSubobject<UMyStatComponent>(TEXT("STAT"));
+	LeftSword = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("LeftSword"));
 
+	TotalAttackIndex = 2;
 	Level = 1;
-	Mana = 5;
 
 }
 
@@ -29,9 +29,9 @@ void ACharacter_Countess::SetupPlayerInputComponent(UInputComponent* PlayerInput
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction(TEXT("Attack_Q"), EInputEvent::IE_Pressed, this, &ACharacter_Countess::AttackQ_Implementation);
-	PlayerInputComponent->BindAction(TEXT("Attack_E"), EInputEvent::IE_Pressed, this, &ACharacter_Countess::AttackE_Implementation);
-	PlayerInputComponent->BindAction(TEXT("Attack_R"), EInputEvent::IE_Pressed, this, &ACharacter_Countess::AttackR_Implementation);
+	PlayerInputComponent->BindAction(TEXT("Attack_Q"), EInputEvent::IE_Pressed, this, &ACharacter_Countess::AttackQ);
+	PlayerInputComponent->BindAction(TEXT("Attack_E"), EInputEvent::IE_Pressed, this, &ACharacter_Countess::AttackE);
+	PlayerInputComponent->BindAction(TEXT("Attack_R"), EInputEvent::IE_Pressed, this, &ACharacter_Countess::AttackR);
 }
 
 void ACharacter_Countess::Tick(float DeltaTime)
@@ -51,8 +51,8 @@ void ACharacter_Countess::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
-	//GetMesh()->HideBoneByName(TEXT("weapon_l"), EPhysBodyOp::PBO_None);
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	GetMesh()->HideBoneByName(TEXT("weapon_l"), EPhysBodyOp::PBO_None);
 
 	/*Sword_L = GetWorld()->SpawnActor<AWeapon_Sword>(SwordClass);
 
@@ -62,8 +62,8 @@ void ACharacter_Countess::BeginPlay()
 		Sword_L->SetOwner(this);
 	}*/
 
-	
-	
+
+
 }
 
 void ACharacter_Countess::PostInitializeComponents()
@@ -86,20 +86,33 @@ void ACharacter_Countess::Attack()
 {
 	Super::Attack();
 
-	if (CurrentWeaponIndex == EWeapon::Sword)
-	{
-		if (IsAttacking)
-			return;
+	if (IsAttacking)
+		return;
 
-		AnimInstance->PlayAttackMontage();
-		AnimInstance->JumpToSection(AttackIndex);
-		AttackIndex = (AttackIndex + 1) % 3;
+	if (CurrentWeaponIndex == EWeapon::None)
+	{
+		AnimInstance->PlayDefaultAttackMontage();
+		AnimInstance->JumpToSection_Default(AttackIndex);
+		AttackIndex = (AttackIndex + 1) % TotalAttackIndex;
 		IsAttacking = true;
 	}
 
+	else if (CurrentWeaponIndex == EWeapon::Sword)
+	{
+		AnimInstance->PlayAttackMontage();
+		AnimInstance->JumpToSection(AttackIndex);
+		AttackIndex = (AttackIndex + 1) % TotalAttackIndex;
+		IsAttacking = true;
+	}
+
+	else if (CurrentWeaponIndex == EWeapon::Bow)
+	{
+		AnimInstance->PlayBowAttackMontage();
+		IsAttacking = true;
+	}
 }
 
-void ACharacter_Countess::AttackQ_Implementation()
+void ACharacter_Countess::AttackQ()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingQ || Stat->GetCurrentMana() < 0.f)
 		return;
@@ -114,11 +127,11 @@ void ACharacter_Countess::AttackQ_Implementation()
 	GetWorldTimerManager().SetTimer(QSkillHandle, this, &ACharacter_Countess::EndAttack_Q, 1.f, true);
 }
 
-void ACharacter_Countess::AttackE_Implementation()
+void ACharacter_Countess::AttackE()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingE || Stat->GetCurrentMana() < 0.f)
 		return;
-	
+
 	IsAttackingE = true;
 	AnimInstance->PlayAttackMontageE();
 	Remaining_SkillE = 6;
@@ -127,7 +140,7 @@ void ACharacter_Countess::AttackE_Implementation()
 	GetWorldTimerManager().SetTimer(ESkillHandle, this, &ACharacter_Countess::EndAttack_E, 1.f, true);
 }
 
-void ACharacter_Countess::AttackR_Implementation()
+void ACharacter_Countess::AttackR()
 {
 	if (CurrentWeaponIndex != EWeapon::Sword || IsAttackingR || Stat->GetCurrentMana() < 0.f)
 		return;
@@ -174,14 +187,13 @@ void ACharacter_Countess::PressClimbingUp()
 	if (!bIsOnWall && bIsClimbingComplete)
 	{
 		AnimInstance->PlayClimbingComplete();
-		UE_LOG(LogTemp, Log, TEXT("Countess Climbing "));
 	}
 }
 
 void ACharacter_Countess::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
-	OnAttackEnd.Broadcast();
+
 }
 
 
@@ -192,4 +204,22 @@ void ACharacter_Countess::AddInGameWidget(class UInGame* InGame)
 	{
 		InGame->SetCountess(Level);
 	}
+}
+
+void ACharacter_Countess::SetupPlayerView(FVector Location, FVector SocketOffset)
+{
+	Super::SetupPlayerView(Location, SocketOffset);
+
+	if (CurrentWeaponIndex == EWeapon::Sword)
+	{
+		LeftSword->SetSkeletalMesh(Weapon->SkeletalMesh);
+		LeftSword->SetVisibility(true);
+		LeftSword->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("SwordSocket_L"));
+	}
+	else
+	{
+		LeftSword->SetVisibility(false);
+	}
+
+
 }

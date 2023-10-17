@@ -41,12 +41,14 @@ public:
 
 	FCharacterStat operator+(const FCharacterStat& other) const
 	{
+		FCharacterStat Result;
+
 		const float* BaseStat = reinterpret_cast<const float*>(this);
 		const float* WeaponStat = reinterpret_cast<const float*>(&other);
-		
-		FCharacterStat Result;
 		float* ResultStat = reinterpret_cast<float*>(&Result);
-		for (int32 i = 0; i < sizeof(FCharacterStat) / sizeof(float); i++)
+
+		int32 StatNum = sizeof(FCharacterStat) / sizeof(float);
+		for (int32 i = 0; i < StatNum; i++)
 		{
 			ResultStat[i] = BaseStat[i] + WeaponStat[i];
 		}

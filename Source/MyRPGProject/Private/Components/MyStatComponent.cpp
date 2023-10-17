@@ -2,11 +2,8 @@
 
 
 #include "Components/MyStatComponent.h"
-#include "GameFrameworks/MyGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Interface/HealthInterface.h"
-#include "GameFramework/Actor.h"
-#include "Characters/Character_Greystone.h"
 #include "GameData/MyGameSingleton.h"
 
 
@@ -34,15 +31,12 @@ void UMyStatComponent::InitializeComponent()
 	
 }
 
-
 void UMyStatComponent::SetLevelStat(int32 NewLevel)
 {
 	CurrentLevel = FMath::Clamp<float>(NewLevel, 1, UMyGameSingleton::Get().MaxLevel);
-	BaseStat = UMyGameSingleton::Get().GetCharacterStat(CurrentLevel-1);
-
-	SetHp(GetTotalStat().MaxHp); 
+	BaseStat = UMyGameSingleton::Get().GetCharacterStat(CurrentLevel - 1);
+	SetHp(GetTotalStat().MaxHp);
 	SetMana(GetTotalStat().MaxMana);
-	
 	OnStatChanged.Broadcast(GetTotalStat());
 }
 
@@ -64,7 +58,7 @@ void UMyStatComponent::SetHp(float Hp)
 void UMyStatComponent::SetMana(float Mana)
 {
 	CurrentMana = FMath::Clamp(Mana, 0.f, BaseStat.MaxMana);
-	OnManaChanged.Broadcast(CurrentMana,GetMaxMana());
+	OnManaChanged.Broadcast(CurrentMana, GetMaxMana());
 }
 
 void UMyStatComponent::SetExp(int32 Exp)
@@ -106,10 +100,4 @@ void UMyStatComponent::SetWeaponStat(const FCharacterStat& NewWeaponStat)
 	WeaponStat = NewWeaponStat;
 	OnAddWeaponAttack.Broadcast(WeaponStat.Attack);
 }
-
-void UMyStatComponent::SetTotalStat(const FCharacterStat& TotalStat)
-{
-	
-}
-
 

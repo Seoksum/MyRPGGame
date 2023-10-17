@@ -24,6 +24,8 @@ class MYRPGPROJECT_API IPlayerStateInterface
 public:
 
 	virtual bool GetIsDoubleJumping() = 0;
+	virtual bool GetIsJumping() = 0;
+	virtual bool GetIsCrouch() = 0;
 	virtual int32 GetCurrentWeaponIndex() = 0;
 	virtual bool GetIsOnWall() = 0;
 	virtual bool GetIsClibmingUp() = 0;

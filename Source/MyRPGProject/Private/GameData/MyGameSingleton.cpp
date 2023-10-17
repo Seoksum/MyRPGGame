@@ -28,14 +28,12 @@ UMyGameSingleton::UMyGameSingleton()
 
 UMyGameSingleton& UMyGameSingleton::Get()
 {
-	// TODO: 여기에 return 문을 삽입합니다.
 	UMyGameSingleton* Singleton = CastChecked<UMyGameSingleton>(GEngine->GameSingleton);
 	if (Singleton)
 	{
 		return *Singleton;
 	}
 
-	UE_LOG(LogMyGameSingleton, Error, TEXT("Invalid Game Singleton"));
 	return *NewObject<UMyGameSingleton>();
 }
 
@@ -47,6 +45,4 @@ FCharacterStat UMyGameSingleton::GetCharacterStat(int32 Level)
 	}
 	return FCharacterStat();
 }
-
-//return CharacterStatTable.IsValidIndex(InLevel) ? CharacterStatTable[InLevel] : FCharacterStat();
 

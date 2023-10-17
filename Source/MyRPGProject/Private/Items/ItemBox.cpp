@@ -7,8 +7,6 @@
 #include "Interface/CharacterItemInterface.h"
 #include "Engine/AssetManager.h"
 #include "Items/ItemDataAsset.h"
-//#include "Engine/StreamableManager.h"
-
 
 // Sets default values
 AItemBox::AItemBox()
@@ -41,11 +39,13 @@ void AItemBox::BeginPlay()
 		{
 			BoxIndex = FMath::RandRange(0, Assets.Num() - 1 - WeaponCount);
 		}
+
 		FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[BoxIndex]));
 		if (AssetPtr.IsPending())
 		{
 			AssetPtr.LoadSynchronous();
 		}
+
 		Item = Cast<UItemDataAsset>(AssetPtr.Get());
 		MeshComp->SetStaticMesh(Item->GetLazyLoadedMesh());
 	}
@@ -55,20 +55,6 @@ void AItemBox::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	//UAssetManager& Manager = UAssetManager::Get();
-	//TArray<FPrimaryAssetId> Assets;
-	//Manager.GetPrimaryAssetIdList(TEXT("ItemDataAsset"), Assets);
-	//if (Assets.Num() > 0)
-	//{
-	//	BoxIndex = FMath::RandRange(0, Assets.Num()-1);
-	//	FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[BoxIndex]));
-	//	if (AssetPtr.IsPending())
-	//	{
-	//		AssetPtr.LoadSynchronous();
-	//	}
-	//	Item = Cast<UItemDataAsset>(AssetPtr.Get());
-	//	MeshComp->SetStaticMesh(Item->GetLazyLoadedMesh());
-	//}
 }
 
 void AItemBox::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -84,16 +70,5 @@ void AItemBox::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		Player->TakeItem(this);
 	}
-
-}
-
-void AItemBox::OnPickedUp()
-{
-	Destroy();
-
-	//MeshComp->SetVisibility(false);
-	//MeshComp->SetSimulatePhysics(false);
-	//MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
