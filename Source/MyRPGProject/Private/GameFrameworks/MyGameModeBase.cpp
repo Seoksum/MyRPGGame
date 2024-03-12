@@ -26,10 +26,10 @@ AMyGameModeBase::AMyGameModeBase()
 		GameInstanceRef = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(World));
 		if (GameInstanceRef)
 		{
-			CharTypeIndex = GameInstanceRef->GetCharacterTypeIndex();
+			CharacterType = GameInstanceRef->GetCharacterType();
 			CharMeshIndex = GameInstanceRef->GetCharacterMeshIndex();
 
-			if (CharTypeIndex == ECharacterIndex::Greystone)
+			if (CharacterType == ECharacterType::CHAR_GreyStone)
 			{
 				static ConstructorHelpers::FClassFinder<ACharacter_Greystone> BP_Greystone1(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Greystone/BP_Greystone.BP_Greystone_C'"));
 				static ConstructorHelpers::FClassFinder<ACharacter_Greystone> BP_Greystone2(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Greystone/BP_Greystone2.BP_Greystone2_C'"));
@@ -45,7 +45,7 @@ AMyGameModeBase::AMyGameModeBase()
 					DefaultPawnClass = BP_Greystone3.Class; //BP_Greystone1.Class;
 			}
 
-			else if (CharTypeIndex == ECharacterIndex::Countess)
+			else if (CharacterType == ECharacterType::CHAR_Countess)
 			{
 				static ConstructorHelpers::FClassFinder<ACharacter_Countess> BP_Countess1(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Countess/BP_Countess.BP_Countess_C'"));
 				static ConstructorHelpers::FClassFinder<ACharacter_Countess> BP_Countess2(TEXT("Blueprint'/Game/Blueprints/MainCharacter/Countess/BP_Countess2.BP_Countess2_C'"));

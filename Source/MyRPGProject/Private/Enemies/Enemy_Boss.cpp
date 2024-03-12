@@ -4,21 +4,17 @@
 #include "Enemies/Enemy_Boss.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/MyStatComponent.h"
-#include "Enemies/Enemy_AnimInstance.h"
 #include "Components/WidgetComponent.h"
 #include "UI/EnemyHPWidget.h"
+#include "AI/AIController_Enemy.h"
+#include "Enemies/Enemy_AnimInstance.h"
 #include "Characters/Character_Parent.h"
-#include "GameFrameworks/MyGameInstance.h"
-#include "AI/AIController_Enemy.h"
-#include "DrawDebugHelpers.h"
-#include "AI/AIController_Enemy.h"
 #include "GameData/CharacterEnum.h"
+#include "GameData/GameCollision.h"
 
 
 AEnemy_Boss::AEnemy_Boss()
 {
-	//Stat = CreateDefaultSubobject<UMyStatComponent>(TEXT("STAT"));
-
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RightWeaponMesh"));
 	WeaponLeft = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("LeftWeaponMesh"));
 	Weapon->SetupAttachment(GetMesh());
@@ -33,7 +29,9 @@ AEnemy_Boss::AEnemy_Boss()
 
 	Level = 5;
 	EnemyExp = 100;
-	EnemyIndex = EEnemy::BossEnemy;
+	AttackRange = 700.f;
+	AttackRadius = 300.f;
+	
 }
 
 void AEnemy_Boss::BeginPlay()
@@ -103,17 +101,11 @@ void AEnemy_Boss::AttackCheck()
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 
-	float AttackRange = 700.f;
-	float AttackRadius = 300.f;
+	FVector TraceStart = GetActorLocation();
+	FVector TraceEnd = TraceStart + GetActorForwardVector() * AttackRange;
 
-	bool bResult = GetWorld()->SweepSingleByChannel(
-		OUT HitResult,
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackRange,
-		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel3,
-		FCollisionShape::MakeSphere(AttackRadius),
-		Params);
+	bool bResult = GetWorld()->SweepSingleByChannel(HitResult, TraceStart, TraceEnd,
+		FQuat::Identity,ATTACK, FCollisionShape::MakeSphere(AttackRadius), Params);
 
 	if (bResult)
 	{

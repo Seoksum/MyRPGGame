@@ -9,6 +9,7 @@
 #include "Items/ItemDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "Interface/PlayerStateInterface.h"
+#include "Items/Item.h"
 
 void UInventoryWidget::NativeConstruct()
 {
@@ -36,29 +37,9 @@ void UInventoryWidget::RefreshInventory()
 {
 	InventoryBox->ClearChildren();
 	TArray<class UItemDataAsset*> CurrentItemAssets = Inventory->GetItemDataArray();
-
 	UItemWidget* ItemWidget;
+
 	for (auto& Item : CurrentItemAssets)
-	{
-		if (Item)
-		{
-			ItemWidget = CreateWidget<UItemWidget>(GetOwningPlayer(), ItemHUDClass);
-			if (ItemWidget)
-			{
-				InventoryBox->AddChildToWrapBox(ItemWidget);
-				ItemWidget->SetItemAssetInfo(Item);
-			}
-		}
-	}
-}
-
-void UInventoryWidget::InitializeInventory(class UInventoryComponent* InventoryComponent)
-{
-	InventoryBox->ClearChildren();
-	TArray<class UItemDataAsset*> DefaultItems = InventoryComponent->GetDefaultItems();
-
-	UItemWidget* ItemWidget;
-	for (auto& Item : DefaultItems)
 	{
 		if (Item)
 		{

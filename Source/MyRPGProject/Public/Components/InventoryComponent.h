@@ -24,20 +24,25 @@ public:
 	void RemoveItem(class UItemDataAsset* Item);
 
 	FORCEINLINE TArray<class UItemDataAsset*> GetDefaultItems() { return DefaultItems; }
-	FORCEINLINE TArray<class UItemDataAsset*> GetItemDataArray() { return ItemDataArray; }
+	FORCEINLINE TArray<class UItemDataAsset*> GetItemDataArray() { return ItemArray; }
+
 
 private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
-		int32 Capacity;
+	int32 Capacity;
 
 	UPROPERTY(EditDefaultsOnly, Instanced)
-		TArray<class UItemDataAsset*> DefaultItems;
+	TArray<class UItemDataAsset*> DefaultItems;
 
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
-		TArray<class UItemDataAsset*> ItemDataArray;
+	TArray<class UItemDataAsset*> ItemArray;
 
 public:
+
 	FOnInventoryUpdated OnInventoryUpdated;
+
+
+
 
 };

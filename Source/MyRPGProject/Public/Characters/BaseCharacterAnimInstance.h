@@ -4,28 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "AnimInstance_Greystone.generated.h"
+#include "BaseCharacterAnimInstance.generated.h"
 
 /**
- *
+ * 
  */
 
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit, int32, float, class UParticleSystem*);
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_Q, int32, float, class UParticleSystem*);
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_E, int32, float, class UParticleSystem*);
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FGOnAttackHit_R, int32, float, class UParticleSystem*);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttackHit, float, float, class UParticleSystem*);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttackHit_Q, float, float, class UParticleSystem*);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttackHit_E, float, float, class UParticleSystem*);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttackHit_R, float, float, class UParticleSystem*);
 DECLARE_MULTICAST_DELEGATE(FOnCameraShake);
 
-
 UCLASS()
-class MYRPGPROJECT_API UAnimInstance_Greystone : public UAnimInstance
+class MYRPGPROJECT_API UBaseCharacterAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-
+	
 public:
 
-	UAnimInstance_Greystone();
+	UBaseCharacterAnimInstance();
 
 	virtual void NativeInitializeAnimation() override;
 
@@ -34,6 +33,7 @@ public:
 
 	// Play Montage
 public:
+
 	void PlayDefaultAttackMontage();
 	void PlayAttackMontage();
 	void PlayAttackMontageQ();
@@ -46,11 +46,14 @@ public:
 	void JumpToSection(int32 SectionIndex);
 	FName GetAttackMontageName(int32 SectionIndex);
 
+	void PlayClimbingUp();
 	void PlayClimbingComplete();
-	float PlayClimbing();
 
 	// AnimNotify
 private:
+
+	UFUNCTION()
+	void AnimNotify_AttackHit();
 
 	UFUNCTION()
 	void AnimNotify_AttackHit_Q();
@@ -101,56 +104,56 @@ public:
 	// Anim Montage
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Montage")
 	UAnimMontage* AttackMontage_Default;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage_SwordDefault;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage_Q;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage_E;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage_R;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* BowAttackMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Climbing Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ClimbingCompleteMontage;
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Climbing Montage", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ClimbingMontage;
 
 
 	// Particle System
-private:
+protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-		class UParticleSystem* AttackQ_Effect;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem")
+	class UParticleSystem* AttackParticle;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem", Meta = (AllowPrivateAccess = true))
-		class UParticleSystem* AttackE_Effect;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem")
+	class UParticleSystem* AttackParticleQ;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ParticleSystem")
+	class UParticleSystem* AttackParticleE;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
-		class UMyStatComponent* Stat;
+	class UMyStatComponent* Stat;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
-		float TraceDistance;
+	float TraceDistance;
 
 
 	// Delegate
 public:
 
-	FGOnAttackHit OnAttackHit;
-	FGOnAttackHit_Q OnAttackHit_Q;
-	FGOnAttackHit_E OnAttackHit_E;
-	FGOnAttackHit_R OnAttackHit_R;
+	FOnAttackHit OnAttackHit;
+	FOnAttackHit_Q OnAttackHit_Q;
+	FOnAttackHit_E OnAttackHit_E;
+	FOnAttackHit_R OnAttackHit_R;
 	FOnCameraShake OnCameraShake;
-
-
 };

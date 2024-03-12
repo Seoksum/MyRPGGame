@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Interface/MyGameModeInterface.h"
+#include "GameData/CharacterEnum.h"
 #include "MyGameModeBase.generated.h"
 
 /**
@@ -32,7 +33,7 @@ private:
 	class UMyGameInstance* GameInstanceRef;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character")
-	int32 CharTypeIndex;
+	ECharacterType CharacterType;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character")
 	int32 CharMeshIndex;

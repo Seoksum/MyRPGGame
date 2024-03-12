@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "Engine/DataTable.h"
 #include "Interface/MyGameInstanceInterface.h"
+#include "GameData/CharacterEnum.h"
 #include "MyGameInstance.generated.h"
 
 /**
@@ -25,16 +26,19 @@ public:
 
 	virtual void Init() override;
 	
-	virtual void SetCharacterTypeIndex(int32 CharacterType);
-	virtual void SetCharacterMeshIndex(int32 CharacterMesh);
-	virtual TMap<int32, FName> GetWeaponArray();
+	virtual void SetCharacterType(ECharacterType InCharacterType);
+	virtual void SetCharacterMeshIndex(int32 InCharacterMesh);
 
-	FORCEINLINE int32 GetCharacterTypeIndex() {return CharacterTypeIdx;}
+	virtual TMap<int32, FName> GetWeaponMap();
+	
+	FORCEINLINE ECharacterType GetCharacterType() { return CharacterType; }
 	FORCEINLINE int32 GetCharacterMeshIndex() { return CharacterMeshIdx; }
 
+
 private:
+
 	UPROPERTY(VisibleAnywhere, Category = "Character")
-	int32 CharacterTypeIdx;
+	ECharacterType CharacterType;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character")
 	int32 CharacterMeshIdx;
@@ -44,7 +48,8 @@ private:
 
 	// Weapon Index와 Socket 이름 저장하는 Map
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TMap<int32, FName> WeaponArray;
+	TMap<int32, FName> WeaponMap;
+
 
 
 };

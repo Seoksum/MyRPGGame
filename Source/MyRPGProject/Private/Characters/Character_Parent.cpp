@@ -6,31 +6,32 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PawnMovementComponent.h"
 #include "TimerManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "GameFrameworks/MyGameModeBase.h"
 #include "Components/MyStatComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/TextBlock.h"
 #include "UI/HPWidget.h"
 #include "UI/InGame.h"
-#include "Components/TextBlock.h"
 #include "ClimbingWall.h"
 #include "GameData/GameCollision.h"
+#include "GameData/CharacterEnum.h"
 #include "Enemies/Enemy.h"
-#include "Items/ItemBox.h"
 #include "Items/WeaponItemDataAsset.h"
-#include "Items/WeaponItemDataAsset_Gun.h"
-#include "Items/WeaponItemDataAsset_Bow.h"
-#include "Items/WeaponItemDataAsset_Sword.h"
 #include "Interface/MyGameModeInterface.h"
 #include "Interface/ChangeHUDInterface.h"
 #include "Interface/MyGameInstanceInterface.h"
-#include "GameData/CharacterEnum.h"
-
+#include "Items/ItemBox.h"
+#include "Items/Weapon.h"
+#include "Items/Weapon_Gun.h"
+#include "Items/Weapon_Sword.h"
+#include "Items/Weapon_Bow.h"
+#include "Characters/BaseCharacterAnimInstance.h"
 
 // Sets default values
 ACharacter_Parent::ACharacter_Parent()
@@ -70,16 +71,18 @@ ACharacter_Parent::ACharacter_Parent()
 
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 
-	CurrentWeaponIndex = EWeapon::None;
+	CurrentWeaponIndex = EWeaponType::WEAPON_NONE;
 
 	bIsSprinting = false;
 	IsDeath = false;
 	ZoomedFOV = 65.f;
 	ZoomInterpSpeed = 20.f;
 
+	MaxAttackIndex = 3;
 	Level = 1;
+	diff = 150.f;
 
-	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	WeaponSkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	bOnInventoryHUDMode = false;
 }
 
@@ -88,14 +91,49 @@ void ACharacter_Parent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Stat->SetLevelStat(Level);
+
 	DefaultFOV = Camera->FieldOfView;
 
-	Stat->SetLevelStat(Level);
+	Sword = GetWorld()->SpawnActor<AWeapon_Sword>(SwordClass);
+	if (Sword)
+	{
+		Sword->SetOwner(this);
+		Sword->SetHidden(true);
+	}
+
+	Gun = GetWorld()->SpawnActor<AWeapon_Gun>(GunClass);
+	if (Gun)
+	{
+		Gun->SetOwner(this);
+		Gun->SetHidden(true);
+	}
+
+	Bow = GetWorld()->SpawnActor<AWeapon_Bow>(BowClass);
+	if (Bow)
+	{
+		//Bow->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("BowSocket"));
+		Bow->SetOwner(this);
+		Bow->SetHidden(true);
+	}
+
 }
 
 void ACharacter_Parent::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	AnimInstance = Cast<UBaseCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->OnAttackHit.AddUObject(this, &ACharacter_Parent::AttackHitCheck);
+		AnimInstance->OnAttackHit_Q.AddUObject(this, &ACharacter_Parent::AttackHitCheck);
+		AnimInstance->OnAttackHit_E.AddUObject(this, &ACharacter_Parent::AttackHitCheck);
+		AnimInstance->OnAttackHit_R.AddUObject(this, &ACharacter_Parent::AttackHitCheck);
+
+		AnimInstance->OnMontageEnded.AddDynamic(this, &ACharacter_Parent::OnAttackMontageEnded);
+		AnimInstance->OnCameraShake.AddUObject(this, &ACharacter_Parent::CameraShakeCheck);
+	}
 
 	HpBar->InitWidget();
 	UHPWidget* HpWidget = Cast<UHPWidget>(HpBar->GetUserWidgetObject());
@@ -123,7 +161,22 @@ void ACharacter_Parent::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CurrentWeaponIndex == EWeapon::Gun || CurrentWeaponIndex == EWeapon::Bow)
+	// 벽 위를 더 이상 오를 수 없어 착지해야할 때
+	if (bIsClimbingComplete)
+	{
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * 3.f);
+		SetActorLocation(GetActorLocation() + GetActorUpVector() * 10.f);
+	}
+
+	// 등반 중일 때
+	if (bIsClimbingUp && bIsOnWall)
+	{
+		FVector Loc = GetActorLocation();
+		SetActorLocation(FVector(Loc.X, Loc.Y, Loc.Z + 1.1f));
+	}
+
+	// 줌인 & 줌아웃
+	if (CurrentWeaponIndex == EWeaponType::WEAPON_GUN || CurrentWeaponIndex == EWeaponType::WEAPON_BOW)
 	{
 		float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
 		float NewFOV = FMath::FInterpTo(Camera->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
@@ -144,7 +197,9 @@ void ACharacter_Parent::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ACharacter_Parent::Pitch);
 	PlayerInputComponent->BindAxis(TEXT("CameraZoom"), this, &ACharacter_Parent::CameraZoom);
 
-
+	PlayerInputComponent->BindAction(TEXT("Attack_Q"), EInputEvent::IE_Pressed, this, &ACharacter_Parent::AttackQ);
+	PlayerInputComponent->BindAction(TEXT("Attack_E"), EInputEvent::IE_Pressed, this, &ACharacter_Parent::AttackE);
+	PlayerInputComponent->BindAction(TEXT("Attack_R"), EInputEvent::IE_Pressed, this, &ACharacter_Parent::AttackR);
 
 	PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &ACharacter_Parent::Sprint);
 	PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &ACharacter_Parent::StopSprinting);
@@ -295,64 +350,95 @@ void ACharacter_Parent::EndCrouch()
 	bIsCrouched = false;
 }
 
-void ACharacter_Parent::AttackHitCheck() // 기본 공격
-{
-	if (CurrentWeaponIndex == EWeapon::None || CurrentWeaponIndex == EWeapon::Sword)
-	{
-		TArray<FHitResult> TraceHits;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
-
-		const float AttackRange = Stat->GetTotalStat().AttackRange;
-
-		const FVector TraceStart = GetActorLocation();
-		const FVector TraceEnd = TraceStart + (GetActorForwardVector() * AttackRange); // 150.0f
-		FCollisionShape SweepShape = FCollisionShape::MakeSphere(100.0f);
-
-		bool bResult = GetWorld()->SweepMultiByChannel(TraceHits, TraceStart, TraceEnd, FQuat::Identity, ATTACK, SweepShape, Params);
-		if (bResult)
-		{
-			for (FHitResult& Hit : TraceHits)
-			{
-				FDamageEvent DamageEvent;
-				Hit.Actor->TakeDamage(Stat->GetTotalStat().Attack, DamageEvent, GetController(), this);
-			}
-		}
-	}
-}
-
 void ACharacter_Parent::Attack()
 {
 	if (IsAttacking)
 		return;
 
-	if (CurrentWeaponIndex == EWeapon::Sword)
+	IsAttacking = true;
+	if (CurrentWeaponIndex == EWeaponType::WEAPON_NONE)
 	{
-		if (SwordAsset) { SwordAsset->WeaponAttack(this); }
+		AnimInstance->PlayDefaultAttackMontage();
+		AnimInstance->JumpToSection_Default(DefaultAttackIndex);
+		DefaultAttackIndex = (DefaultAttackIndex + 1) % MaxAttackIndex;
 	}
-
-	else if (CurrentWeaponIndex == EWeapon::Gun)
+	else if (CurrentWeaponIndex == EWeaponType::WEAPON_SWORD)
 	{
-		if (GunAsset)
+		if (Sword)
 		{
-			GunAsset->WeaponAttack(this);
+			AnimInstance->PlayAttackMontage();
+			AnimInstance->JumpToSection(SwordAttackIndex);
+			SwordAttackIndex = (SwordAttackIndex + 1) % MaxAttackIndex;
+			//Sword->Attack(Stat->GetTotalStat().Attack, Stat->GetTotalStat().AttackRange, nullptr);
 		}
 	}
-	else if (CurrentWeaponIndex == EWeapon::Bow)
+	else if (CurrentWeaponIndex == EWeaponType::WEAPON_GUN)
 	{
-		if (BowAsset) { BowAsset->WeaponAttack(this); }
+		if (Gun) { Gun->StartFire(); }
 	}
-
-	return;
+	else if (CurrentWeaponIndex == EWeaponType::WEAPON_BOW)
+	{
+		if (Bow) 
+		{
+			AnimInstance->PlayBowAttackMontage();
+			Bow->Attack(); 
+		}
+	}
 }
 
 void ACharacter_Parent::StopFire()
 {
-	if (CurrentWeaponIndex == EWeapon::Gun && GunAsset)
+	if (CurrentWeaponIndex == EWeaponType::WEAPON_GUN && Gun)
 	{
-		GunAsset->StopFire();
+		Gun->StopFire();
+		IsAttacking = false;
 	}
 }
+
+void ACharacter_Parent::AttackHitCheck(float damage, float TraceDistance, class UParticleSystem* Particle) 
+{
+	if (Sword) { Sword->Attack(damage, TraceDistance, Particle); }
+}
+
+void ACharacter_Parent::AttackQ()
+{
+	if (CurrentWeaponIndex != EWeaponType::WEAPON_SWORD || IsAttackingQ || Stat->GetCurrentMana() < 0.f)
+		return;
+
+	IsAttackingQ = true;
+	AnimInstance->PlayAttackMontageQ();
+	Remaining_SkillQ = 3;
+	Stat->OnAttacking(Mana);
+	GetWorldTimerManager().SetTimer(QSkillHandle, this, &ACharacter_Parent::EndAttack_Q, 1.f, true);
+}
+
+void ACharacter_Parent::AttackE()
+{
+	if (CurrentWeaponIndex != EWeaponType::WEAPON_SWORD || IsAttackingE || Stat->GetCurrentMana() < 0.f)
+		return;
+
+	IsAttackingE = true;
+	AnimInstance->PlayAttackMontageE();
+	Remaining_SkillE = 6;
+
+	Stat->OnAttacking(Mana + 5);
+	GetWorldTimerManager().SetTimer(ESkillHandle, this, &ACharacter_Parent::EndAttack_E, 1.f, true);
+}
+
+void ACharacter_Parent::AttackR()
+{
+	if (CurrentWeaponIndex != EWeaponType::WEAPON_SWORD || IsAttackingR || Stat->GetCurrentMana() < 0.f)
+		return;
+
+	IsAttackingR = true;
+	AnimInstance->PlayAttackMontageR();
+
+	Remaining_SkillR = 10;
+
+	Stat->OnAttacking(Mana + 10);
+	GetWorldTimerManager().SetTimer(RSkillHandle, this, &ACharacter_Parent::EndAttack_R, 1.f, true);
+}
+
 
 void ACharacter_Parent::EndAttack_Q()
 {
@@ -409,92 +495,50 @@ void ACharacter_Parent::EndAttack_R()
 	--Remaining_SkillR;
 }
 
+void ACharacter_Parent::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsAttacking = false;
+	//AttackMoving = false;
+}
+
 float ACharacter_Parent::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Stat->OnAttacked(DamageAmount);
-	UE_LOG(LogTemp, Log, TEXT("Player Take Damage"));
 	return DamageAmount;
 }
-
 
 // 인벤토리
 void ACharacter_Parent::Interact()
 {
-	if (CurrentInteractableItemAsset != nullptr)
+	if (CurrentInteractable != nullptr)
 	{
-		AddItemToInventory(CurrentInteractableItemAsset);
+		Inventory->AddItem(CurrentInteractable);
+		CurrentInteractable = nullptr;
 		CurrentItemBox->Destroy();
 	}
 }
 
-bool ACharacter_Parent::AddItemToInventory(class UItemDataAsset* Item)
-{
-	if (Item)
-	{
-		Inventory->AddItem(Item);
-		CurrentInteractableItemAsset = nullptr;
-		return true;
-	}
-	return false;
-}
-
-
 void ACharacter_Parent::UseItem(class UItemDataAsset* Item)
 {
 	Item->Use(this);
-	if (Item->Type != EItemType::Weapon)
+	if (Item->Type != EItemType::ITEM_WEAPON)
 	{
 		Inventory->RemoveItem(Item);
 	}
 }
 
-void ACharacter_Parent::SwitchWeaponItemData(int32 Index, class UWeaponItemDataAsset* WeaponItem)
-{
-	if (WeaponItem)
-	{
-		if (WeaponItem->WeaponMesh.IsPending())
-		{
-			WeaponItem->WeaponMesh.LoadSynchronous();
-		}
-		Weapon->SetSkeletalMesh(WeaponItem->WeaponMesh.Get());
-		WeaponItem->WeaponMeshComponent = Weapon;
-	}
-
-	CurrentWeaponIndex = Index;
-	SpringArm->TargetArmLength = 550.f;
-	CurrentWeaponItemAsset = WeaponItem;
-	Stat->SetWeaponStat(WeaponItem->WeaponStat);
-
-	if (Index == EWeapon::Sword)
-	{
-		SwordAsset = Cast<UWeaponItemDataAsset_Sword>(CurrentWeaponItemAsset);
-		SetupPlayerView(FVector(0.f, 0.f, 0.f), FVector(0.f, 0.f, 0.f));
-	}
-	else if (Index == EWeapon::Gun)
-	{
-		GunAsset = Cast<UWeaponItemDataAsset_Gun>(CurrentWeaponItemAsset);
-		SetupPlayerView(FVector(0.f, 40.f, 70.f), FVector(0.f, 60.f, 0.f));
-	}
-	else if (Index == EWeapon::Bow)
-	{
-		BowAsset = Cast<UWeaponItemDataAsset_Bow>(CurrentWeaponItemAsset);
-		SetupPlayerView(FVector(0.f, 40.f, 70.f), FVector(0.f, 60.f, 0.f));
-	}
-	Camera->SetFieldOfView(DefaultFOV);
-}
-
-void ACharacter_Parent::SetupPlayerView(FVector Location, FVector SocketOffset)
+void ACharacter_Parent::SetupPlayerView(FVector SpringArmLocation, FVector SocketOffset)
 {
 	IMyGameInstanceInterface* GameInstance = Cast<IMyGameInstanceInterface>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (GameInstance)
 	{
-		TMap<int32, FName> WeaponArray = GameInstance->GetWeaponArray();
-		if (WeaponArray.Num() > 0)
+		TMap<int32, FName> WeaponMap = GameInstance->GetWeaponMap();
+		if (WeaponMap.Num() > 0)
 		{
-			const FName WeaponSocketName = WeaponArray[CurrentWeaponIndex];
-			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
-			SpringArm->SetRelativeLocation(Location);
+			const FName WeaponSocketName = WeaponMap[CurrentWeaponIndex];
+			WeaponSkeletalMeshComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
+			SpringArm->SetRelativeLocation(SpringArmLocation);
 			SpringArm->SocketOffset = FVector(SocketOffset);
 		}
 	}
@@ -526,37 +570,51 @@ void ACharacter_Parent::PressClimbingUp()
 	}
 
 	FVector Start = GetActorLocation();
-	FVector End = Start + GetActorForwardVector() * 150.f;
+	FVector End = Start + GetActorForwardVector() * diff;
 
 	float CapsuleHeight = (GetCapsuleComponent()->GetScaledCapsuleHalfHeight()) * 2.f; // 156.f
 
-	float diff = 150.f;
 	Start.Z += CapsuleHeight + diff;
 	End.Z += CapsuleHeight + diff;
 
 	FHitResult OutHit;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
-	bool bResult = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, CLIMBING_WALL, QueryParams);
+	bool bResult = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, QueryParams);
+	float InRate = 0.f;
 
 	// Climbing 
 	if (bResult) // Climbing 
 	{
+		InRate = 1.3f;
 		bIsOnWall = true;
-		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 		bIsClimbingUp = true;
+		bIsClimbingComplete = false;
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+		AnimInstance->PlayClimbingUp();
 	}
 
 	// Complete
 	else
 	{
 		if (bIsOnWall) // Climbing 완료
-		{
-			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		{			
 			bIsOnWall = false;
+			bIsClimbingUp = false;
 			bIsClimbingComplete = true;
+			AnimInstance->PlayClimbingComplete();
+			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 		}
 	}
+
+	GetWorld()->GetTimerManager().SetTimer(ClimbingTimerHandle, this, &ACharacter_Parent::ReleaseClimbing, InRate, false);
+}
+
+void ACharacter_Parent::ReleaseClimbing()
+{
+	bIsClimbingUp = false;
+	bIsClimbingComplete = false;
+	GetWorld()->GetTimerManager().ClearTimer(ClimbingTimerHandle);
 }
 
 void ACharacter_Parent::CameraShakeCheck()
@@ -609,12 +667,29 @@ void ACharacter_Parent::TakeItem(class AItemBox* ItemBox)
 {
 	CurrentItemBox = ItemBox;
 	UItemDataAsset* ItemData = CurrentItemBox->Item;
+	CurrentInteractable = ItemData;
+}
 
-	CurrentInteractableItemAsset = ItemData;
-	if (ItemData->Type == EItemType::Weapon)
+void ACharacter_Parent::SwitchWeapon(int32 InWeaponIndex, class UWeaponItemDataAsset* WeaponItem)
+{
+	if (WeaponItem)
 	{
-		UWeaponItemDataAsset* WeaponItemData = Cast<UWeaponItemDataAsset>(ItemData);
-		CurrentWeaponItemAsset = WeaponItemData;
+		WeaponSkeletalMeshComp->SetSkeletalMesh(WeaponItem->WeaponMesh.Get());
+	}
+	
+	CurrentWeaponIndex = InWeaponIndex;
+	Stat->SetWeaponStat(WeaponItem->WeaponStat);
+	if (CurrentWeaponIndex == EWeaponType::WEAPON_SWORD)
+	{
+		SetupPlayerView(FVector(0.f, 0.f, 0.f), FVector(0.f, 0.f, 0.f));
+	}
+	else if (CurrentWeaponIndex == EWeaponType::WEAPON_GUN)
+	{
+		SetupPlayerView(FVector(0.f, 40.f, 70.f), FVector(0.f, 60.f, 0.f));
+	}
+	else if (CurrentWeaponIndex == EWeaponType::WEAPON_BOW)
+	{
+		SetupPlayerView(FVector(0.f, 40.f, 70.f), FVector(0.f, 60.f, 0.f));
 	}
 }
 

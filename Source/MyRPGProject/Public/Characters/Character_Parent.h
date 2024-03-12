@@ -5,16 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interface/HealthInterface.h"
-#include "Interface/AttackHitCheckInterface.h"
 #include "Interface/CharacterItemInterface.h"
 #include "Interface/InGameWidgetInterface.h"
 #include "Interface/PlayerStateInterface.h"
+#include "GameData/CharacterEnum.h"
 #include "Character_Parent.generated.h"
 
 
 
 UCLASS()
-class MYRPGPROJECT_API ACharacter_Parent : public ACharacter, public IHealthInterface, public IAttackHitCheckInterface, public ICharacterItemInterface, public IInGameWidgetInterface, public IPlayerStateInterface
+class MYRPGPROJECT_API ACharacter_Parent : public ACharacter, public IHealthInterface, public ICharacterItemInterface, public IInGameWidgetInterface, public IPlayerStateInterface
 {
 	GENERATED_BODY()
 
@@ -48,21 +48,24 @@ protected:
 
 	virtual void Landed(const FHitResult& Hit) override;
 
-	virtual void AttackHitCheck() override;
-
 	virtual void Attack();
-
 	void StopFire();
+
+	UFUNCTION()
+	void AttackHitCheck(float damage, float TraceDistance, class UParticleSystem* Particle);
+
+	void AttackQ();
+	void AttackE();
+	void AttackR();
 
 	void EndAttack_Q();
 	void EndAttack_E();
 	void EndAttack_R();
 
-	virtual void PressClimbingUp(); // 1번 키를 눌러 캐릭터 벽 타기
-
 	virtual void OnDeath_Implementation() override;
 
 	void IncreaseExp(int32 Exp);
+
 
 public:
 
@@ -84,6 +87,7 @@ public:
 
 
 public:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", Meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* SpringArm;
 
@@ -97,6 +101,9 @@ public:
 
 	// Player State(AnimInstance)
 public:
+
+	UPROPERTY(VisibleAnywhere)
+	class UBaseCharacterAnimInstance* AnimInstance;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool bIsSprinting;
@@ -114,19 +121,13 @@ public:
 	int32 CurrentWeaponIndex;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
-	bool bIsClimbingUp = false;
-
-	UPROPERTY(VisibleAnywhere, Category = "State")
-	bool bIsOnWall = false;
-
-	UPROPERTY(VisibleAnywhere, Category = "State")
-	bool bIsClimbingComplete = false;
-
-	UPROPERTY(VisibleAnywhere, Category = "State")
-	bool CanPressClimbingUp = true;
-
-	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool IsDeath;
+
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UPROPERTY(VisibleAnywhere, Category = "Skill")
+	bool AttackMoving;
 
 
 //Player State Interface 
@@ -146,36 +147,48 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category = "Skills")
+	UPROPERTY(VisibleAnywhere, Category = "Attack")
 	bool IsAttacking = false;
 
-	UPROPERTY(VisibleAnywhere, Category = "Skills")
+	UPROPERTY(VisibleAnywhere, Category = "Attack")
 	bool IsAttackingQ = false;
 
-	UPROPERTY(VisibleAnywhere, Category = "Skills")
+	UPROPERTY(VisibleAnywhere, Category = "Attack")
 	bool IsAttackingE = false;
 
-	UPROPERTY(VisibleAnywhere, Category = "Skills")
+	UPROPERTY(VisibleAnywhere, Category = "Attack")
 	bool IsAttackingR = false;
 
-	UPROPERTY(VisibleAnywhere, Category = "Skills")
+	UPROPERTY(VisibleAnywhere, Category = "Attack")
 	int32 Remaining_SkillQ;
 
-	UPROPERTY(VisibleAnywhere, Category = "Skills")
+	UPROPERTY(VisibleAnywhere, Category = "Attack")
 	int32 Remaining_SkillE;
 
-	UPROPERTY(VisibleAnywhere, Category = "Skills")
+	UPROPERTY(VisibleAnywhere, Category = "Attack")
 	int32 Remaining_SkillR;
 
 	FTimerHandle QSkillHandle;
 	FTimerHandle ESkillHandle;
 	FTimerHandle RSkillHandle;
 
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	int32 MaxAttackIndex;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	int32 DefaultAttackIndex = 0;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	int32 SwordAttackIndex = 0;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 Level;
 
 	UPROPERTY()
 	float Mana;
+
+
+public:
 
 	UPROPERTY(VisibleAnywhere)
 	class UWidgetComponent* HpBar;
@@ -208,42 +221,68 @@ protected:
 
 	
 	
-	//Item Data Asset 
+	//Item 
 protected:
-
-	bool AddItemToInventory(class UItemDataAsset* Item);
 
 	virtual void TakeItem(class AItemBox* ItemBox) override;
 
 	virtual void UseItem(class UItemDataAsset* Item) override;
 
-	virtual void SetupPlayerView(FVector Location, FVector SocketOffset);
+	virtual void SetupPlayerView(FVector SpringArmLocation, FVector SocketOffset);
 
 	UPROPERTY(VisibleAnywhere)
 	class AItemBox* CurrentItemBox;
 
 	UPROPERTY(VisibleAnywhere, Category="Item")
-	class UItemDataAsset* CurrentInteractableItemAsset;
+	class UItemDataAsset* CurrentInteractable;
 
 	UPROPERTY(VisibleAnywhere, Category = "Item")
-	class UWeaponItemDataAsset_Sword* SwordAsset;
+	class AWeapon_Sword* Sword;
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+	TSubclassOf<class AWeapon_Sword> SwordClass;
 
 	UPROPERTY(VisibleAnywhere, Category = "Item")
-	class UWeaponItemDataAsset_Gun* GunAsset;
+	class AWeapon_Gun* Gun;
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+	TSubclassOf<class AWeapon_Gun> GunClass;
 
 	UPROPERTY(VisibleAnywhere, Category = "Item")
-	class UWeaponItemDataAsset_Bow* BowAsset;
+	class AWeapon_Bow* Bow;
 
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	class UWeaponItemDataAsset* CurrentWeaponItemAsset;
+	UPROPERTY(EditAnywhere, Category = "Item")
+	TSubclassOf<class AWeapon_Bow> BowClass;
+
 
 public:
 
-	void SwitchWeaponItemData(int32 Index, class UWeaponItemDataAsset* WeaponItem); // 무기 교체 UI
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class USkeletalMeshComponent* Weapon;
+	class USkeletalMeshComponent* WeaponSkeletalMeshComp;
 
+	void SwitchWeapon(int32 InWeaponIndex, class UWeaponItemDataAsset* WeaponItem); // 무기 교체 UI
+
+
+	//Climbing
+protected:
+
+	void PressClimbingUp(); // 1번 키를 눌러 캐릭터 벽 타기
+
+	void ReleaseClimbing();
+
+	UPROPERTY(VisibleAnywhere, Category = "Climbing")
+	bool bIsClimbingUp = false;
+
+	UPROPERTY(VisibleAnywhere, Category = "Climbing")
+	bool bIsOnWall = false;
+
+	UPROPERTY(VisibleAnywhere, Category = "Climbing")
+	bool bIsClimbingComplete = false;
+
+	FTimerHandle ClimbingTimerHandle;
+
+	UPROPERTY(EditAnywhere, Category = "Climbing")
+	float diff;
 
 
 	// HUD

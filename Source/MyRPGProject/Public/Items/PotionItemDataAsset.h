@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Items/ItemDataAsset.h"
+#include "GameData/CharacterEnum.h"
 #include "PotionItemDataAsset.generated.h"
 
 /**
@@ -26,8 +27,13 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
-		float IncreasingVal = 15.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Item", meta = (ClampMin = 0.0f))
+	float HpPotionAmount;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Item", meta = (ClampMin = 0.0f))
+	float ManaPotionAmount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Type")
+	EPotionType PotionType;
 
 };

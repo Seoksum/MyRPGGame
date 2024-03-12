@@ -4,15 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "GameData/CharacterEnum.h"
 #include "ItemDataAsset.generated.h"
-
-
-UENUM(BlueprintType)
-enum class EItemType : uint8
-{
-	Weapon = 0,
-	Potion,
-};
 
 /**
  *
@@ -34,25 +27,27 @@ public:
 		return FPrimaryAssetId("ItemDataAsset", GetFName());
 	}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
-	EItemType Type;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mesh")
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> Mesh;
 
 	UPROPERTY()
 	TWeakObjectPtr<class UInventoryComponent> OwingInventory;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+public:
+
+	UPROPERTY(EditAnywhere, Category = "Type")
+	EItemType Type;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	class UTexture2D* Thumbnail;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FText ItemName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item", meta = (MultiLine = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Item")  // meta = (MultiLine = true))
 	FText ItemDescription;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FText UseActionText;
 
 };

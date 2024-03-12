@@ -21,29 +21,29 @@ void UCharacterSelectionWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	Btn_Greystone->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::GreystonePressed);
-	Btn_Countess->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::CountessPressed);
+	Btn_Greystone->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::PressGreystoneBtn);
+	Btn_Countess->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::PressCountessBtn);
 
-	Btn_SelectCharacter->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::SelectPressed);
+	Btn_SelectCharacter->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::PressSelectBtn);
 
-	NextBtn->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::NextButtonPressed);
-	BeforeBtn->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::BeforeButtonPressed);
+	NextBtn->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::PressNextBtn);
+	BeforeBtn->OnClicked.AddDynamic(this, &UCharacterSelectionWidget::PressBeforeBtn);
 
 }
 
-void UCharacterSelectionWidget::GreystonePressed()
+void UCharacterSelectionWidget::PressGreystoneBtn()
 {
-	SelectorActor->SelectCharacter(ECharacterIndex::Greystone);
-	NowCharacterIndex = ECharacterIndex::Greystone;
+	SelectorActor->SelectCharacter(ECharacterType::CHAR_GreyStone);
+	NowCharacterType = ECharacterType::CHAR_GreyStone;
 }
 
-void UCharacterSelectionWidget::CountessPressed()
+void UCharacterSelectionWidget::PressCountessBtn()
 {
-	SelectorActor->SelectCharacter(ECharacterIndex::Countess);
-	NowCharacterIndex = ECharacterIndex::Countess;
+	SelectorActor->SelectCharacter(ECharacterType::CHAR_Countess);
+	NowCharacterType = ECharacterType::CHAR_Countess;
 }
 
-void UCharacterSelectionWidget::SelectPressed()
+void UCharacterSelectionWidget::PressSelectBtn()
 {
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
@@ -51,24 +51,22 @@ void UCharacterSelectionWidget::SelectPressed()
 		PlayerController->SetInputMode(FInputModeGameOnly());
 		PlayerController->bShowMouseCursor = false;
 	}
-
 	IMyGameInstanceInterface* GameInstance = Cast<IMyGameInstanceInterface>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (GameInstance)
 	{
-		GameInstance->SetCharacterTypeIndex(NowCharacterIndex);
+		GameInstance->SetCharacterType(NowCharacterType);
 		GameInstance->SetCharacterMeshIndex(SelectorActor->CharacterMeshIdx);
 	}
-
-	UGameplayStatics::OpenLevel(GetWorld(), FName("ZeroMap"), true);
+	UGameplayStatics::OpenLevel(GetWorld(), FName("BattleMap"), true);
 }
 
-void UCharacterSelectionWidget::NextButtonPressed()
+void UCharacterSelectionWidget::PressNextBtn()
 {
-	SelectorActor->NextOrBefore(NowCharacterIndex, true);
+	SelectorActor->NextOrBefore(NowCharacterType, true);
 }
 
-void UCharacterSelectionWidget::BeforeButtonPressed()
+void UCharacterSelectionWidget::PressBeforeBtn()
 {
-	SelectorActor->NextOrBefore(NowCharacterIndex, false);
+	SelectorActor->NextOrBefore(NowCharacterType, false);
 }
 

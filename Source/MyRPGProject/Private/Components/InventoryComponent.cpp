@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Items/ItemDataAsset.h"
 
+#include "Items/Item.h"
+
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -28,22 +30,21 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::AddItem(UItemDataAsset* Item)
 {
-	if (ItemDataArray.Num() >= Capacity || !Item)
+	if (ItemArray.Num() >= Capacity || !Item)
 		return;
-
 	Item->OwingInventory = this;
-	ItemDataArray.Add(Item);
-	// UI 업데이트
+	ItemArray.Add(Item);
 	OnInventoryUpdated.Broadcast();
 }
 
 void UInventoryComponent::RemoveItem(UItemDataAsset* Item)
 {
-	Item->OwingInventory = nullptr;
-	ItemDataArray.RemoveSingle(Item);
-	OnInventoryUpdated.Broadcast();
+	if (Item)
+	{
+		Item->OwingInventory = nullptr;
+		ItemArray.RemoveSingle(Item);
+		OnInventoryUpdated.Broadcast();
+	}
 }
-
-
 
 

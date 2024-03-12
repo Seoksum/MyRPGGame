@@ -16,6 +16,9 @@
 #include "UI/EnemyHPWidget.h"
 #include "Interface/MyGameModeInterface.h"
 #include "Enemies/Enemy_AnimInstance.h"
+#include "GameData/CharacterEnum.h"
+#include "Items/Item.h"
+
 
 
 // Sets default values
@@ -98,20 +101,19 @@ void AEnemy::OnDeath_Implementation()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
-	GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &AEnemy::EnemyDeath, 2.f, false);
+	GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &AEnemy::SpawnItemBox, 2.f, false);
 }
 
-
-void AEnemy::EnemyDeath()
+void AEnemy::SpawnItemBox()
 {
 	FTransform SpawnTransform(FRotator(0.f, 0.f, 0.f), GetActorLocation());
-
 	ItemBox = GetWorld()->SpawnActorDeferred<AItemBox>(ItemBoxClass, SpawnTransform);
 	if (ItemBox)
 	{
-		ItemBox->BoxIndex = ItemBoxIndex;
+		ItemBox->ItemIndex = ItemBoxIndex;
 		UGameplayStatics::FinishSpawningActor(ItemBox, SpawnTransform);
 	}
+
 	GetWorldTimerManager().ClearTimer(DeathTimerHandle);
 }
 

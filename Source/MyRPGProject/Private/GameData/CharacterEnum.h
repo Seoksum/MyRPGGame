@@ -5,24 +5,34 @@
 #include "CharacterEnum.generated.h"
 
 UENUM()
-enum EWeapon
+enum EWeaponType
 {
-	None,
-	Sword,
-	Gun,
-	Bow,
+	WEAPON_NONE,
+	WEAPON_SWORD,
+	WEAPON_GUN,
+	WEAPON_BOW,
 };
 
-UENUM()
-enum EEnemy
+UENUM(BlueprintType)
+enum class ECharacterType : uint8
 {
-	SkeletonEnemy,
-	BossEnemy,
+	CHAR_GreyStone,
+	CHAR_Countess,
 };
 
-UENUM()
-enum ECharacterIndex
+UENUM(BlueprintType)
+enum class EItemType : uint8
 {
-	Greystone,
-	Countess,
+	ITEM_POTION,
+	ITEM_WEAPON,
 };
+
+UENUM(BlueprintType)
+enum class EPotionType : uint8
+{
+	POTION_HP = 0,
+	POTION_MANA,
+};
+
+
+

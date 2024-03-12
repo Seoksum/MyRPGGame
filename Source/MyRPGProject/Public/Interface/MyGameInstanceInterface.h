@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "GameData/CharacterEnum.h"
 #include "MyGameInstanceInterface.generated.h"
 
 // This class does not need to be modified.
@@ -23,9 +24,10 @@ class MYRPGPROJECT_API IMyGameInstanceInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	virtual void SetCharacterTypeIndex(int32 CharacterType) = 0;
-	virtual void SetCharacterMeshIndex(int32 CharacterMesh) = 0;
+	virtual void SetCharacterType(ECharacterType InCharacterType) = 0;
+	virtual void SetCharacterMeshIndex(int32 InCharacterMesh) = 0;
 
-	virtual TMap<int32, FName> GetWeaponArray() = 0;
+	virtual TMap<int32, FName> GetWeaponMap() = 0;
+	
 
 };

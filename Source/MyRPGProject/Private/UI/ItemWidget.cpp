@@ -8,7 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Items/ItemDataAsset.h"
 #include "Interface/CharacterItemInterface.h"
-
+#include "Items/Item.h"
 
 void UItemWidget::NativeConstruct()
 {
@@ -32,14 +32,12 @@ void UItemWidget::OnClickedUseButton()
 	{
 		Player->UseItem(ItemData);
 	}
-
 }
 
 FText UItemWidget::GetToolTipUseButton()
 {
 	return (("Click to {0} {1},{2}"), ItemData->UseActionText, ItemData->ItemName, ItemData->ItemDescription);
 }
-
 
 void UItemWidget::SetItemAssetInfo(class UItemDataAsset* PickItem)
 {

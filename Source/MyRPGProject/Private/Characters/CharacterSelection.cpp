@@ -11,38 +11,33 @@
 // Sets default values
 ACharacterSelection::ACharacterSelection()
 {
-
 	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("ROOT"));
 	RootComponent = RootScene;
 
 	// Greystone
-	Greystones = CreateDefaultSubobject<USceneComponent>(TEXT("Greystones"));
-	Greystones->SetupAttachment(RootComponent);
-
-	Greystone1 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GREYSTONE1"));
-	Greystone2 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GREYSTONE2"));
-	Greystone3 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GREYSTONE3"));
-	Greystone1->SetupAttachment(Greystones);
-	Greystone2->SetupAttachment(Greystones);
-	Greystone3->SetupAttachment(Greystones);
-	GreyStoneArray.Add(Greystone1);
-	GreyStoneArray.Add(Greystone2);
-	GreyStoneArray.Add(Greystone3);
+	GreystoneSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("GreystoneScene"));
+	GreystoneSceneComp->SetupAttachment(RootComponent);
+	for (int32 i = 1; i <= 3; i++)
+	{
+		class USkeletalMeshComponent* GreystoneSkeletalMesh;
+		FString FormattedNum = FString::Printf(TEXT("Greystone%d"), i);
+		GreystoneSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>((TEXT("%s"), *FormattedNum), false);
+		GreystoneSkeletalMesh->SetupAttachment(GreystoneSceneComp);
+		GreyStoneArray.Add(GreystoneSkeletalMesh);
+	}
 
 	// Countess
-	Countesses = CreateDefaultSubobject<USceneComponent>(TEXT("Countesses"));
-	Countesses->SetupAttachment(RootComponent);
-	Countess1 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("COUNTESS1"));
-	Countess2 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("COUNTESS2"));
-	Countess3 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("COUNTESS3"));
-	Countess1->SetupAttachment(Countesses);
-	Countess2->SetupAttachment(Countesses);
-	Countess3->SetupAttachment(Countesses);
+	CountessSceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("CountessScene"));
+	CountessSceneComp->SetupAttachment(RootComponent);
 
-	CountessArray.Add(Countess1);
-	CountessArray.Add(Countess2);
-	CountessArray.Add(Countess3);
-
+	for (int32 i = 1; i <= 3; i++)
+	{
+		class USkeletalMeshComponent* CountessSkeletalMesh;
+		FString FormattedNum = FString::Printf(TEXT("Countess%d"), i);
+		CountessSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>((TEXT("%s"), *FormattedNum),false);
+		CountessSkeletalMesh->SetupAttachment(CountessSceneComp);
+		CountessArray.Add(CountessSkeletalMesh);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -52,7 +47,7 @@ void ACharacterSelection::BeginPlay()
 
 	HideGreystone();
 	HideCountess();
-
+	
 	GreyStoneArray[0]->SetVisibility(true);
 
 	ACharacterSelectController* PlayerController =
@@ -64,42 +59,31 @@ void ACharacterSelection::BeginPlay()
 	}
 }
 
-void ACharacterSelection::SelectCharacter(int32 Index)
+void ACharacterSelection::SelectCharacter(ECharacterType InCharacterType)
 {
 	CharacterMeshIdx = 0;
-	if (Index == ECharacterIndex::Greystone)
+	if (InCharacterType == ECharacterType::CHAR_GreyStone)
 	{
 		GreyStoneArray[CharacterMeshIdx]->SetVisibility(true);
 		HideCountess();
 	}
-	else if (Index == ECharacterIndex::Countess)
+	else if (InCharacterType == ECharacterType::CHAR_Countess)
 	{
 		CountessArray[CharacterMeshIdx]->SetVisibility(true);
 		HideGreystone();
-	}
+	} 
 }
 
-void ACharacterSelection::NextOrBefore(int32 CharacterType, bool IsNext)
+void ACharacterSelection::NextOrBefore(ECharacterType InCharacterType, bool IsNext)
 {
 	TArray<USkeletalMeshComponent*> temp;
-
-	if (CharacterType == ECharacterIndex::Greystone)
-		temp = GreyStoneArray;
-	
-	else if (CharacterType == ECharacterIndex::Countess)
-		temp = CountessArray;
-
+	if (InCharacterType == ECharacterType::CHAR_GreyStone) { temp = GreyStoneArray; }
+	else if (InCharacterType == ECharacterType::CHAR_Countess) { temp = CountessArray; }
 
 	temp[CharacterMeshIdx]->SetVisibility(false);
 	
-	if (IsNext)
-	{
-		CharacterMeshIdx = (CharacterMeshIdx + 1) % temp.Num();
-	}
-	else
-	{
-		CharacterMeshIdx = (CharacterMeshIdx + (temp.Num() - 1)) % temp.Num();
-	}
+	if (IsNext) { CharacterMeshIdx = (CharacterMeshIdx + 1) % temp.Num(); }
+	else { CharacterMeshIdx = (CharacterMeshIdx + (temp.Num() - 1)) % temp.Num(); }
 
 	temp[CharacterMeshIdx]->SetVisibility(true);
 }
@@ -121,4 +105,6 @@ void ACharacterSelection::HideCountess()
 		Countess->SetVisibility(false);
 	}
 }
+
+
 

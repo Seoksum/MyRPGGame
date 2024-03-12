@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameData/CharacterEnum.h"
 #include "CharacterSelection.generated.h"
 
 UCLASS()
@@ -19,13 +20,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	
 
 public:
 
-	void SelectCharacter(int32 Index);
+	void SelectCharacter(ECharacterType InCharacterType);
 
-	void NextOrBefore(int32 CharacterType, bool IsNext);
+	void NextOrBefore(ECharacterType InCharacterType, bool IsNext);
 
 	void HideGreystone();
 	void HideCountess();
@@ -40,32 +40,10 @@ private:
 	class USceneComponent* RootScene;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	class USceneComponent* Greystones;
+	class USceneComponent* GreystoneSceneComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	class USceneComponent* Countesses;
-
-
-	// SkeletalMeshComponent
-private:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* Greystone1;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* Greystone2;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* Greystone3;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* Countess1;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* Countess2;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly, meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* Countess3;
+	class USceneComponent* CountessSceneComp;
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<USkeletalMeshComponent*> GreyStoneArray;

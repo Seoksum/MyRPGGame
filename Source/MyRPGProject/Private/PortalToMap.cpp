@@ -8,7 +8,7 @@
 APortalToMap::APortalToMap()
 {
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> PM(TEXT("StaticMesh'/Game/Blueprints/Items/SM_TargettingPortal.SM_TargettingPortal'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> PM(TEXT("StaticMesh'/Game/EnvironmentPack2/Meshes/SM_TargettingPortal.SM_TargettingPortal'"));
 	if (PM.Succeeded())
 	{
 		MeshComp->SetStaticMesh(PM.Object);

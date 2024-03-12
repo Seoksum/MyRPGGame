@@ -22,7 +22,7 @@ AEnemy_Thrower::AEnemy_Thrower()
 
 	Level = 1;
 	EnemyExp = 10;
-	EnemyIndex = EEnemy::SkeletonEnemy;
+
 }
 
 void AEnemy_Thrower::BeginPlay()

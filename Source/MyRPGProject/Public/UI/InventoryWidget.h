@@ -22,8 +22,6 @@ protected:
 	UFUNCTION()
 	void RefreshInventory();
 
-	void InitializeInventory(class UInventoryComponent* InventoryComponent);
-
 	UFUNCTION()
 	virtual void OnClickedCloseButton();
 

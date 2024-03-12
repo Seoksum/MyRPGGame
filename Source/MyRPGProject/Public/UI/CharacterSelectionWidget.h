@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "GameData/CharacterEnum.h"
 #include "CharacterSelectionWidget.generated.h"
 
 /**
@@ -22,19 +23,19 @@ protected:
 	// 버튼 이벤트
 protected:
 	UFUNCTION()
-	void GreystonePressed();
+	void PressGreystoneBtn();
 
 	UFUNCTION()
-	void CountessPressed();
+	void PressCountessBtn();
 
 	UFUNCTION()
-	void SelectPressed();
+	void PressSelectBtn();
 
 	UFUNCTION()
-	void NextButtonPressed();
+	void PressNextBtn();
 
 	UFUNCTION()
-	void BeforeButtonPressed();
+	void PressBeforeBtn();
 
 	// 버튼
 private:
@@ -65,6 +66,9 @@ public:
 
 	UPROPERTY()
 	int32 NowCharacterIndex = 0;
+
+	UPROPERTY()
+	ECharacterType NowCharacterType;
 
 
 };

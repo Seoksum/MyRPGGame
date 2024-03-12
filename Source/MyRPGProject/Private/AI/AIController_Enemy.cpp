@@ -10,7 +10,6 @@
 #include "GameData/CharacterEnum.h"
 #include "Interface/AIEnemyInterface.h"
 
-
 const FName AAIController_Enemy::HomePosKey(TEXT("HomePos"));
 const FName AAIController_Enemy::PatrolPosKey(TEXT("PatrolPos"));
 

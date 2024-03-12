@@ -2,45 +2,45 @@
 
 
 #include "GameFrameworks/MyGameInstance.h"
+#include "GameData/CharacterEnum.h"
 
 
 UMyGameInstance::UMyGameInstance()
 {
-	CharacterTypeIdx = 0;
+	CharacterType = ECharacterType::CHAR_GreyStone;
 	CharacterMeshIdx = 0;
 
-	WeaponCount = 4;
+	WeaponCount = 3;
 }
 
 void UMyGameInstance::Init()
 {
 	Super::Init();
 	
-	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeapon"), true);
+	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
 	if (enumPtr != nullptr)
 	{
-		for (int32 i = 1; i < WeaponCount; i++)
+		for (int32 i = 1; i <= WeaponCount; i++)
 		{
-			const FName WeaponName = *FString::Printf(TEXT("%sSocket"), *enumPtr->GetNameByIndex(i).ToString());
-			WeaponArray.Add(i, WeaponName);
+			const FName WeaponName = *FString::Printf(TEXT("%s_SOCKET"), *enumPtr->GetNameByIndex(i).ToString());
+			WeaponMap.Add(i, WeaponName);
 		}
 	}
-
 }
 
-void UMyGameInstance::SetCharacterTypeIndex(int32 CharacterType)
+void UMyGameInstance::SetCharacterType(ECharacterType InCharacterType)
 {
-	CharacterTypeIdx = CharacterType;
+	CharacterType = InCharacterType;
 }
 
-void UMyGameInstance::SetCharacterMeshIndex(int32 CharacterMesh)
+void UMyGameInstance::SetCharacterMeshIndex(int32 InCharacterMesh)
 {
-	CharacterMeshIdx = CharacterMesh;
+	CharacterMeshIdx = InCharacterMesh;
 }
 
-TMap<int32, FName> UMyGameInstance::GetWeaponArray()
+TMap<int32, FName> UMyGameInstance::GetWeaponMap()
 {
-	return WeaponArray;
+	return WeaponMap;
 }
 
 

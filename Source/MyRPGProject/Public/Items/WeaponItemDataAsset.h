@@ -5,16 +5,9 @@
 #include "CoreMinimal.h"
 #include "Items/ItemDataAsset.h"
 #include "GameData/CharacterStat.h"
+#include "GameData/CharacterEnum.h"
 #include "WeaponItemDataAsset.generated.h"
 
-UENUM(BlueprintType)
-enum class EWeaponType : uint8
-{
-	None,
-	Sword,
-	Gun,
-	Bow,
-};
 
 /**
  *
@@ -28,7 +21,6 @@ public:
 
 	virtual void Use(class ACharacter_Parent* PlayerCharacter) override;
 
-	virtual void WeaponAttack(class ACharacter_Parent* InPlayer);
 
 public:
 
@@ -36,23 +28,15 @@ public:
 	{
 		return FPrimaryAssetId("ItemDataAsset", GetFName());
 	}
+
 	UPROPERTY(EditAnywhere, Category = "Stat")
 	FCharacterStat WeaponStat;
 
 	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
 	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
 
-	UPROPERTY(EditAnywhere, Category = "WeaponMesh")
-	TSoftObjectPtr<USkeletalMeshComponent> WeaponMeshComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Type")
-	EWeaponType WeaponType;
-
-
-protected:
-
-	UPROPERTY(VisibleAnywhere, Category = "Player")
-		class ACharacter_Parent* Player;
+	int32 WeaponType;
 
 
 };

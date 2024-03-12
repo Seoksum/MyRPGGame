@@ -3,15 +3,13 @@
 
 #include "Enemies/Enemy_Corpse.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/MyStatComponent.h"
 #include "Enemies/Enemy_AnimInstance.h"
+#include "Components/MyStatComponent.h"
 #include "Components/WidgetComponent.h"
 #include "UI/EnemyHPWidget.h"
 #include "Characters/Character_Parent.h"
-#include "AI/AIController_Enemy.h"
-#include "Components/CapsuleComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "GameData/CharacterEnum.h"
+#include "GameData/GameCollision.h"
 
 
 AEnemy_Corpse::AEnemy_Corpse()
@@ -36,7 +34,9 @@ AEnemy_Corpse::AEnemy_Corpse()
 
 	Level = 2;
 	EnemyExp = 15;
-	EnemyIndex = EEnemy::SkeletonEnemy;
+	AttackRange = 500.f;
+	AttackRadius = 300.f;
+	
 }
 
 void AEnemy_Corpse::BeginPlay()
@@ -88,19 +88,12 @@ void AEnemy_Corpse::AttackCheck()
 {
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
-
 	Params.AddIgnoredActor(this);
 
-	float AttackRange = 500.f;
-	float AttackRadius = 300.f;
-	FColor DrawColor;
-	bool bResult = GetWorld()->LineTraceSingleByChannel(
-		OUT HitResult,
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackRange,
-		ECollisionChannel::ECC_GameTraceChannel3,
-		Params);
+	FVector TraceStart = GetActorLocation();
+	FVector TraceEnd = TraceStart + GetActorForwardVector() * AttackRange;
 
+	bool bResult = GetWorld()->LineTraceSingleByChannel(OUT HitResult, TraceStart, TraceEnd, ATTACK, Params);
 
 	if (bResult)
 	{

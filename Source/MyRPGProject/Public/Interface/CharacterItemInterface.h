@@ -27,6 +27,5 @@ public:
 
 	virtual void TakeItem(class AItemBox* ItemBox) = 0;
 
-	
 
 };

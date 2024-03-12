@@ -22,7 +22,7 @@ AItemBox::AItemBox()
 	MeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 
 	WeaponCount = 3;
-	BoxIndex = 0;
+	ItemIndex = 0;
 }
 
 // Called when the game starts or when spawned
@@ -35,17 +35,17 @@ void AItemBox::BeginPlay()
 	Manager.GetPrimaryAssetIdList(TEXT("ItemDataAsset"), Assets);
 	if (Assets.Num() > 0)
 	{
-		if (BoxIndex == 0)
+		if (ItemIndex == 0)
 		{
-			BoxIndex = FMath::RandRange(0, Assets.Num() - 1 - WeaponCount);
+			ItemIndex = FMath::RandRange(0, Assets.Num() - 1 - WeaponCount);
 		}
 
-		FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[BoxIndex]));
+		FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[ItemIndex]));
 		if (AssetPtr.IsPending())
 		{
 			AssetPtr.LoadSynchronous();
 		}
-
+		
 		Item = Cast<UItemDataAsset>(AssetPtr.Get());
 		MeshComp->SetStaticMesh(Item->GetLazyLoadedMesh());
 	}
@@ -57,18 +57,16 @@ void AItemBox::PostInitializeComponents()
 
 }
 
-void AItemBox::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AItemBox::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Item == nullptr)
+	if (Item != nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Item is null"));
-		return;
-	}
-
-	ICharacterItemInterface* Player = Cast<ICharacterItemInterface>(OtherActor);
-	if (Player)
-	{
-		Player->TakeItem(this);
+		ICharacterItemInterface* Player = Cast<ICharacterItemInterface>(OtherActor);
+		if (Player)
+		{
+			Player->TakeItem(this);
+		}
 	}
 }
 

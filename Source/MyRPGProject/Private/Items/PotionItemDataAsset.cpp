@@ -9,20 +9,19 @@ void UPotionItemDataAsset::Use(ACharacter_Parent* PlayerCharacter)
 {
 	Super::Use(PlayerCharacter);
 
-	if (!PlayerCharacter)
-		return;
-
-	UMyStatComponent* Stat = PlayerCharacter->GetMyStatComponent();
-	if (Stat)
+	if (PlayerCharacter)
 	{
-		if (ItemName.EqualTo(FText::FromString("HpPotion")))
+		UMyStatComponent* Stat = PlayerCharacter->GetMyStatComponent();
+		if (Stat)
 		{
-			Stat->UseHpPotion(IncreasingVal); // HpPotionVal = 15.f;
-		}
-		else if (ItemName.EqualTo(FText::FromString("ManaPotion")))
-		{
-			Stat->UseManaPotion(IncreasingVal); // ManaPotionVal = 15.f;
+			if (PotionType == EPotionType::POTION_HP)
+			{
+				Stat->UseHpPotion(HpPotionAmount);
+			}
+			else if (PotionType == EPotionType::POTION_MANA)
+			{
+				Stat->UseManaPotion(ManaPotionAmount);
+			}
 		}
 	}
-	
 }

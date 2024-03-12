@@ -25,13 +25,11 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
+	UPROPERTY(VisibleAnywhere, Category = "Component")
+	class UBoxComponent* CollisionComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "Component")
-		class UBoxComponent* CollisionComp;
-
-	UPROPERTY(VisibleAnywhere, Category = "Component")
-		class UStaticMeshComponent* MeshComp;
-
+	class UStaticMeshComponent* MeshComp;
 
 
 public:
@@ -43,7 +41,7 @@ public:
 	int32 WeaponCount;
 
 	UPROPERTY(EditAnywhere, Category = "Item")
-	int32 BoxIndex;
+	int32 ItemIndex;
 
 
 };

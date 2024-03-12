@@ -127,5 +127,5 @@ void UInGame::UpdatePlayerStat(const FCharacterStat& CharacterStat)
 void UInGame::UpdateRetryCount(int32 NewRetryCount)
 {
 	const FString RetryCount = FString::Printf(TEXT("%d"), NewRetryCount);
-	Text_RetryCount->SetText(FText::FromString(RetryCount));
+	//Text_RetryCount->SetText(FText::FromString(RetryCount));
 }
