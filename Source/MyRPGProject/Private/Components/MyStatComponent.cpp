@@ -7,14 +7,13 @@
 #include "GameFramework/Actor.h"
 #include "Characters/Character_Greystone.h"
 #include "GameData/MyGameSingleton.h"
-
+#include "GameFrameworks/MyGameInstance.h"
 
 // Sets default values for this component's properties
 UMyStatComponent::UMyStatComponent()
 {
 	bWantsInitializeComponent = true;
 
-	CurrentLevel = 1;
 }
 
 // Called when the game starts
@@ -22,24 +21,33 @@ void UMyStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	MaxLevel = 4;
+	CurrentLevel = 1;
 }
 
 void UMyStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	SetLevelStat(CurrentLevel);
+	//SetLevelStat(CurrentLevel);
 	//MyGameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 }
 
 
 void UMyStatComponent::SetLevelStat(int32 NewLevel)
 {
-	CurrentLevel = FMath::Clamp<float>(NewLevel, 1, UMyGameSingleton::Get().MaxLevel);
-	BaseStat = UMyGameSingleton::Get().GetCharacterStat(CurrentLevel-1);
-	SetHp(GetTotalStat().MaxHp); 
-	SetMana(GetTotalStat().MaxMana);
+	CurrentLevel = FMath::Clamp<float>(NewLevel, 1, MaxLevel);
+	MyGameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	BaseStat = MyGameInstance->GetCharacterStat(CurrentLevel);
+	MaxHp = BaseStat.MaxHp;
+	MaxMana = BaseStat.MaxMana;
+	SetHp(MaxHp);
+	SetMana(MaxHp);
+
+	//CurrentLevel = FMath::Clamp<float>(NewLevel, 1, UMyGameSingleton::Get().MaxLevel);
+	//BaseStat = UMyGameSingleton::Get().GetCharacterStat(CurrentLevel-1);
+	//SetHp(GetTotalStat().MaxHp); 
+	//SetMana(GetTotalStat().MaxMana);
 	
 	OnStatChanged.Broadcast(GetTotalStat());
 }
@@ -72,7 +80,7 @@ void UMyStatComponent::SetExp(int32 Exp)
 	float LevelExp = BaseStat.Exp;
 	if (LevelExp <= CurrentExp)
 	{
-		CurrentLevel = FMath::Clamp<int32>(CurrentLevel + 1, 1, UMyGameSingleton::Get().MaxLevel);
+		CurrentLevel = FMath::Clamp<int32>(CurrentLevel + 1, 1, MaxLevel);
 		OnPlayerLevelUp.Broadcast(static_cast<int32>(CurrentLevel));
 		CurrentExp -= LevelExp;
 	}

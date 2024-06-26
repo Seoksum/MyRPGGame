@@ -7,6 +7,7 @@
 #include "Engine/DataTable.h"
 #include "Interface/MyGameInstanceInterface.h"
 #include "GameData/CharacterEnum.h"
+#include "GameData/CharacterStat.h"
 #include "MyGameInstance.generated.h"
 
 /**
@@ -34,6 +35,14 @@ public:
 	FORCEINLINE ECharacterType GetCharacterType() { return CharacterType; }
 	FORCEINLINE int32 GetCharacterMeshIndex() { return CharacterMeshIdx; }
 
+public:
+
+	FCharacterStat GetCharacterStat(int32 Level);
+
+	FORCEINLINE TArray<FCharacterStat> GetCharacterStatTable() const { return CharacterStatTable; }
+
+	void SetCurrentLevel(float InCurrentLevel);
+	float GetCurrentLevel();
 
 private:
 
@@ -50,6 +59,13 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TMap<int32, FName> WeaponMap;
 
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	float CurrentLevel;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	int32 MaxLevel; // 레벨이 몇개있는지
+
+	TArray<FCharacterStat> CharacterStatTable;
 
 
 };

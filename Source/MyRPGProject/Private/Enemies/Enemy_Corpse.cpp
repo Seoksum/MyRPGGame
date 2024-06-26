@@ -75,8 +75,8 @@ void AEnemy_Corpse::PostInitializeComponents()
 void AEnemy_Corpse::Attack()
 {
 	Super::Attack();
-
-	if (IsAttacking || Stat->GetCurrentHp() <= 0.f)
+	
+	if (IsAttacking|| Stat->GetCurrentHp() <= 0.f)
 		return;
 
 	AnimInstance->PlayAttackMontage_Corpse();

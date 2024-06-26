@@ -73,5 +73,6 @@ void AArrow::OnBeginOverlap(UPrimitiveComponent* OverlappedcComp, AActor* OtherA
 void AArrow::SetArrowSpeed(float ArrowSpeedVal)
 {
 	ProjectileMovementComp->InitialSpeed = ArrowSpeedVal;
+	// ARROW EDIT@!!
 }
 

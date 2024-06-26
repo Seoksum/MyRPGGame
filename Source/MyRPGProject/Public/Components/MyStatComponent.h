@@ -100,12 +100,17 @@ protected:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat")
 	float CurrentLevel;
 
+	UPROPERTY(EditAnywhere, Category = "Stat")
+	float MaxLevel;
+
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
 	FCharacterStat BaseStat;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
 	FCharacterStat WeaponStat;
 
+	UPROPERTY(VisibleInstanceOnly)
+	class UMyGameInstance* MyGameInstance;
 
 
 };

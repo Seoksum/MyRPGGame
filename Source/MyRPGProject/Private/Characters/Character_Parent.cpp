@@ -56,7 +56,6 @@ ACharacter_Parent::ACharacter_Parent()
 	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 
 
-
 	Stat = CreateDefaultSubobject<UMyStatComponent>(TEXT("STAT"));
 	HpBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBAR"));
 	HpBar->SetupAttachment(GetMesh());
@@ -71,18 +70,17 @@ ACharacter_Parent::ACharacter_Parent()
 
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 
-	CurrentWeaponIndex = EWeaponType::WEAPON_NONE;
+	WeaponSkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 
+	CurrentWeaponIndex = EWeaponType::WEAPON_NONE;
 	bIsSprinting = false;
 	IsDeath = false;
 	ZoomedFOV = 65.f;
 	ZoomInterpSpeed = 20.f;
-
 	MaxAttackIndex = 3;
 	Level = 1;
 	diff = 150.f;
-
-	WeaponSkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	CharacterWalkSpeed = 600.f;
 	bOnInventoryHUDMode = false;
 }
 
@@ -99,22 +97,18 @@ void ACharacter_Parent::BeginPlay()
 	if (Sword)
 	{
 		Sword->SetOwner(this);
-		Sword->SetHidden(true);
 	}
 
 	Gun = GetWorld()->SpawnActor<AWeapon_Gun>(GunClass);
 	if (Gun)
 	{
 		Gun->SetOwner(this);
-		Gun->SetHidden(true);
 	}
 
 	Bow = GetWorld()->SpawnActor<AWeapon_Bow>(BowClass);
 	if (Bow)
 	{
-		//Bow->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("BowSocket"));
 		Bow->SetOwner(this);
-		Bow->SetHidden(true);
 	}
 
 }
@@ -169,10 +163,13 @@ void ACharacter_Parent::Tick(float DeltaTime)
 	}
 
 	// 등반 중일 때
-	if (bIsClimbingUp && bIsOnWall)
+	if (bIsOnWall)
 	{
-		FVector Loc = GetActorLocation();
-		SetActorLocation(FVector(Loc.X, Loc.Y, Loc.Z + 1.1f));
+		if (bIsClimbingUp)
+		{
+			FVector Loc = GetActorLocation();
+			SetActorLocation(FVector(Loc.X, Loc.Y, Loc.Z + 1.1f));
+		}
 	}
 
 	// 줌인 & 줌아웃
@@ -225,6 +222,7 @@ void ACharacter_Parent::OnDeath_Implementation()
 {
 	if (IsDeath)
 		return;
+
 	IsDeath = true;
 
 	IMyGameModeInterface* MyGameMode = Cast<IMyGameModeInterface>(GetWorld()->GetAuthGameMode());
@@ -263,6 +261,8 @@ void ACharacter_Parent::Yaw(float Value)
 
 void ACharacter_Parent::Pitch(float Value)
 {
+	if (Value == 0.f || bIsOnWall)
+		return;
 	AddControllerPitchInput(Value);
 }
 
@@ -272,7 +272,7 @@ void ACharacter_Parent::Sprint()
 	if (!bIsSprinting)
 	{
 		bIsSprinting = true;
-		GetCharacterMovement()->MaxWalkSpeed = 1200.f;
+		GetCharacterMovement()->MaxWalkSpeed = CharacterWalkSpeed * 2.f;
 	}
 }
 // Shift키를 떼 캐릭터의 이동속도를 처음 값으로 설정하는 함수
@@ -281,7 +281,7 @@ void ACharacter_Parent::StopSprinting()
 	if (bIsSprinting)
 	{
 		bIsSprinting = false;
-		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		GetCharacterMovement()->MaxWalkSpeed = CharacterWalkSpeed;
 	}
 }
 
@@ -292,7 +292,6 @@ void ACharacter_Parent::DoubleJump()
 
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	bIsOnWall = false;
-	OnClickJumpButton = true;
 
 	if (DoubleJumpCounter == 0)
 	{
@@ -308,7 +307,9 @@ void ACharacter_Parent::DoubleJump()
 		IsDoubleJumping = true;
 	}
 	else
+	{
 		return;
+	}
 }
 
 void ACharacter_Parent::Landed(const FHitResult& Hit)
@@ -316,7 +317,6 @@ void ACharacter_Parent::Landed(const FHitResult& Hit)
 	DoubleJumpCounter = 0;
 	bIsClimbingComplete = false;
 	IsDoubleJumping = false;
-	OnClickJumpButton = false;
 }
 
 void ACharacter_Parent::CameraZoom(const float Value)
@@ -369,7 +369,6 @@ void ACharacter_Parent::Attack()
 			AnimInstance->PlayAttackMontage();
 			AnimInstance->JumpToSection(SwordAttackIndex);
 			SwordAttackIndex = (SwordAttackIndex + 1) % MaxAttackIndex;
-			//Sword->Attack(Stat->GetTotalStat().Attack, Stat->GetTotalStat().AttackRange, nullptr);
 		}
 	}
 	else if (CurrentWeaponIndex == EWeaponType::WEAPON_GUN)
@@ -420,7 +419,6 @@ void ACharacter_Parent::AttackE()
 	IsAttackingE = true;
 	AnimInstance->PlayAttackMontageE();
 	Remaining_SkillE = 6;
-
 	Stat->OnAttacking(Mana + 5);
 	GetWorldTimerManager().SetTimer(ESkillHandle, this, &ACharacter_Parent::EndAttack_E, 1.f, true);
 }
@@ -432,9 +430,7 @@ void ACharacter_Parent::AttackR()
 
 	IsAttackingR = true;
 	AnimInstance->PlayAttackMontageR();
-
 	Remaining_SkillR = 10;
-
 	Stat->OnAttacking(Mana + 10);
 	GetWorldTimerManager().SetTimer(RSkillHandle, this, &ACharacter_Parent::EndAttack_R, 1.f, true);
 }
@@ -498,7 +494,6 @@ void ACharacter_Parent::EndAttack_R()
 void ACharacter_Parent::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
-	//AttackMoving = false;
 }
 
 float ACharacter_Parent::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -528,6 +523,7 @@ void ACharacter_Parent::UseItem(class UItemDataAsset* Item)
 	}
 }
 
+// CurrentWeaponIndex에 해당되는 무기를 설정한 소켓 위치에 붙이기
 void ACharacter_Parent::SetupPlayerView(FVector SpringArmLocation, FVector SocketOffset)
 {
 	IMyGameInstanceInterface* GameInstance = Cast<IMyGameInstanceInterface>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -711,7 +707,6 @@ void ACharacter_Parent::AddInGameWidget(class UInGame* InGame)
 
 // AnimInstance
 bool ACharacter_Parent::GetIsDoubleJumping() { return IsDoubleJumping; }
-bool ACharacter_Parent::GetIsJumping() { return OnClickJumpButton; }
 bool ACharacter_Parent::GetIsCrouch() { return bIsCrouched; }
 int32 ACharacter_Parent::GetCurrentWeaponIndex() { return CurrentWeaponIndex; }
 bool ACharacter_Parent::GetIsOnWall() { return bIsOnWall; }

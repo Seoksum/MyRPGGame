@@ -58,6 +58,7 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Stat->SetLevelStat(Level);
 }
 
 void AEnemy::PostInitializeComponents()

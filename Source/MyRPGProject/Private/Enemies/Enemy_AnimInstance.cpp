@@ -63,6 +63,7 @@ void UEnemy_AnimInstance::PlayAttackMontage_Boss()
 void UEnemy_AnimInstance::PlayAttackMontage_Corpse()
 {
 	Montage_Play(Corpse_AttackMontage, 1.f);
+	UE_LOG(LogTemp, Log, TEXT("Play Attack Montage Enemy"));
 }
 
 void UEnemy_AnimInstance::PlayAttackMontage_Thrower()

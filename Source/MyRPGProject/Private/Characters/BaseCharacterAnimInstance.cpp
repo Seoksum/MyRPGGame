@@ -42,7 +42,6 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (PlayerState)
 	{
 		IsDoubleJumping = PlayerState->GetIsDoubleJumping();
-		IsJumping = PlayerState->GetIsJumping();
 		IsCrouched = PlayerState->GetIsCrouch();
 		WeaponIdx = PlayerState->GetCurrentWeaponIndex();
 		IsOnWall = PlayerState->GetIsOnWall();
@@ -147,6 +146,7 @@ void UBaseCharacterAnimInstance::AnimNotify_AttackHit_R()
 void UBaseCharacterAnimInstance::AnimNotify_CamShakeHit()
 {
 	OnCameraShake.Broadcast();
+	// UE_LOLGEFfel
 }
 
 

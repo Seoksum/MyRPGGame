@@ -112,9 +112,6 @@ public:
 	int32 DoubleJumpCounter;
 
 	UPROPERTY(VisibleAnywhere, Category = "State")
-	bool OnClickJumpButton;
-
-	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool IsDoubleJumping;
 
 	UPROPERTY(EditDefaultsOnly, Category ="State")
@@ -126,8 +123,11 @@ public:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-	UPROPERTY(VisibleAnywhere, Category = "Skill")
+	UPROPERTY(VisibleAnywhere, Category = "State")
 	bool AttackMoving;
+
+	UPROPERTY(EditDefaultsOnly, Category = "State")
+	float CharacterWalkSpeed;
 
 
 //Player State Interface 
@@ -137,7 +137,6 @@ public:
 	virtual class UInventoryComponent* GetInventoryComponent() override;
 
 	virtual bool GetIsDoubleJumping() override;
-	virtual bool GetIsJumping() override;
 	virtual bool GetIsCrouch() override;
 	virtual int32 GetCurrentWeaponIndex() override;
 	virtual bool GetIsOnWall() override;
